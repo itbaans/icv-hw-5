@@ -1,0 +1,42 @@
+# PyTorch / Python ignores
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Dataset and outputs (User requested to ignore data files)
+Assignment2/output/
+Assignment2/assignment2/intermediate_outputs/
+Assignment2/assignment3/edge_outputs/
+data/
+datasets/
+*.zip
+*.tar.gz
+
+# Task 1 specific ignores
+task1_cnn/cnn_outputs/
+task1_cnn/logs/
+task1_cnn/*.pth
+task1_cnn/*.pt
+
+# Task 2 specific ignores
+task2_nst_video/matting/weights/
+task2_nst_video/matting/logs/
+task2_nst_video/outputs/
+task2_nst_video/input_video.mp4
+task2_nst_video/content/
+task2_nst_video/style/
+*.mp4
+*.avi
+*.mov
+
+# IDEs
+.idea/
+.vscode/
+*.swp

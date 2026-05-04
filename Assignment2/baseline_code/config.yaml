@@ -1,0 +1,86 @@
+# ============================================================
+# AgriTech SeedCounter – Configuration
+# Tuned for 3024x3024 high-resolution seed images.
+# Single seed area ≈ 20,000–31,000 px²
+# ============================================================
+
+preprocessing:
+  grayscale: true
+  noise_reduction:
+    method: gaussian          # primary method used in main pipeline
+    gaussian_kernel_size: [7, 7]
+    gaussian_sigma: 0
+    median_kernel_size: 5
+    bilateral_d: 9
+    bilateral_sigma_color: 75
+    bilateral_sigma_space: 75
+
+thresholding:
+  primary: adaptive           # otsu | adaptive  → which mask feeds Stage 4+
+  otsu:
+    enabled: true
+  adaptive:
+    enabled: true             # both run for comparison; only Otsu used for main mask
+    method: gaussian          # gaussian | mean
+    block_size: 31
+    C: 4
+
+morphology:
+  opening:
+    enabled: true
+    kernel_shape: ellipse     # rect | ellipse | cross
+    kernel_size: [5, 5]       # smaller = removes only tiny noise, preserves thin rings
+    iterations: 1
+  erosion:
+    enabled: false
+    kernel_shape: ellipse
+    kernel_size: [3, 3]
+    iterations: 1
+  dilation:
+    enabled: false
+    kernel_shape: ellipse
+    kernel_size: [3, 3]
+    iterations: 1
+  closing:
+    enabled: true
+    kernel_shape: ellipse
+    kernel_size: [25, 25]     # large = fills rings/holes inside seeds (~20-40px gaps)
+    iterations: 2
+
+clustering:
+  kmeans:
+    n_clusters: 2             # background + seed body + seed shadow/edge
+    max_iter: 10
+    attempts: 3
+  dbscan:
+    eps: 20                   # max pixel distance between two points in a cluster
+    min_samples: 50           # minimum pixels to form a dense region
+    sample_step: 8            # subsample every Nth foreground pixel for speed
+
+watershed:
+  enabled: true
+  dist_threshold: 0.4         # fraction of peak distance for sure-foreground markers
+  min_peak_distance: 25       # minimum pixels between two seed markers
+  max_markers: 500            # if markers exceed this, skip cv2.watershed (too slow)
+                              # and fall back to sure-fg CCA directly
+
+blob_detection:
+  enabled: true
+  min_threshold: 10
+  max_threshold: 200
+  filter_by_area: true
+  min_area: 8000
+  max_area: 200000
+  filter_by_circularity: true
+  min_circularity: 0.3
+  filter_by_convexity: false
+  filter_by_inertia: false
+
+filtering:
+  min_area: 8000              # below this = noise / tiny fragment
+  max_area: 200000            # above this = merged cluster or background
+  min_circularity: 0.25       # perfectly circular = 1.0; 0 = no filter
+  max_aspect_ratio: 3.5       # width/height; >3.5 = elongated artifact
+
+failure_case:
+  error_threshold_pct: 10.0

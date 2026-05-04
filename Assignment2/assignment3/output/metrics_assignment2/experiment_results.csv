@@ -1,0 +1,13 @@
+exp_id,group,description,mae,rmse,accuracy_pct,num_failures,n_images
+★-Baseline,Baseline,Gaussian + Adaptive-G + Close→Open + Threshold + WS(0.4/25),21.25,34.225,50.0,10,20
+A2,A-Filter,Median filter,21.6,34.6843,45.0,11,20
+B2,B-Threshold,Otsu global threshold,40.7,60.8589,25.0,15,20
+A2,A-Filter,Median filter,21.6,34.6843,45.0,11,20
+B2,B-Threshold,Otsu global threshold,40.7,60.8589,25.0,15,20
+A2,A-Filter,Median filter,21.6,34.6843,45.0,11,20
+B2,B-Threshold,Otsu global threshold,40.7,60.8589,25.0,15,20
+C2,C-Morphology,No closing (opening only),66.8,81.0019,0.0,20,20
+D2,D-SegSource,K-Means mask → CCA + Watershed,41.15,60.9545,30.0,14,20
+D3,D-SegSource,DBSCAN mask → CCA + Watershed,41.15,61.4813,35.0,13,20
+E2,E-Counter,CCA only – no watershed,43.8,65.2204,30.0,14,20
+E3,E-Counter,Blob detection only,66.7,80.8727,0.0,20,20

@@ -1,0 +1,146 @@
+﻿DIGITAL IMAGE PROCESSING
+Course Project Series
+AgriTech Quality Control System
+Assignment 3: Feature-Based Computer Vision Methods
+Automated Seed Counting Using Advanced Feature Descriptors
+Project Context
+Your Assignment 1 classical image processing pipeline has been deployed and tested. The client is expanding operations and now has TWO processing lines with different imaging systems:
+Dataset 1 (Seeds): Original seed processing line with clustering-based approach
+Dataset 2 (BSDS500 - Natural Images): Berkeley Segmentation Dataset with complex natural scenes requiring contour detection
+Both datasets struggle with:
+* Clear boundary detection between touching/overlapping objects
+* Varying edge sharpness due to lighting conditions
+* Objects with different sizes and complex textures
+Your team needs to develop Version 2.0 using edge detection methods (Canny and Sobel) to improve boundary detection across BOTH datasets. The BSDS500 dataset will test whether your edge detection approach generalizes to complex natural scenes beyond agricultural products.
+	
+
+________________
+
+
+Assignment Objectives
+By completing this assignment, you will:
+* Apply edge detection methods (Canny, Sobel) on two different datasets
+* Compare edge detection performance across different object types 
+* Analyze which features work best for which dataset
+* Compare feature-based methods against your classical baseline
+
+
+Datasets
+Dataset 1: Seeds (from Assignment 2)
+You will use the same seed dataset from Assignment 1 with your intermediate_outputs/ folder containing:
+* Preprocessed filtered images
+* Ground truth seed counts
+* Clustering results from Assignment 2 as baseline
+
+
+Dataset 2: BSDS500 (Berkeley Segmentation Dataset)
+📊 BSDS500 Dataset Information
+Source: University of California, Berkeley (2001)
+Download: https://beta.hyper.ai/en/datasets/5379
+Description: 500 natural images with human-annotated boundaries and segmentations. Contains 200 training images and 100 test images.
+Use for this assignment: Select 50-100 images from the training set for edge detection experiments
+Ground Truth: Human-annotated boundary maps available for comparison (optional for analysis)
+Why BSDS500? Standard benchmark for contour/edge detection algorithms. Tests whether your edge detection pipeline generalizes from simple objects (seeds) to complex natural scenes.
+	
+
+Technical Requirements
+1. Implementation Constraints
+You must implement your solution using classical feature-based computer vision methods. No machine learning or deep learning is permitted in this assignment.
+Allowed Libraries:
+* OpenCV (cv2) - for SIFT, HOG, LBP, edge detection, and feature matching
+* NumPy - for numerical operations
+* scikit-image - for feature extraction (HOG, LBP)
+* Matplotlib / PIL - for visualization
+Prohibited:
+* Scikit-learn ML algorithms (SVM, Random Forest, etc.) - reserved for Assignment 3
+* TensorFlow, PyTorch, Keras, or any deep learning frameworks
+* Pre-trained models or neural networks
+
+
+2. Required Processing Approach: Edge Detection on Two Datasets
+You must implement edge detection and contour analysis on BOTH datasets and compare results:
+Component
+	Requirements
+	Dataset 1: Seeds (from Assignment 2)
+	Apply edge detection to Assignment 2's filtered images: • Canny edge detection with parameter tuning (threshold values) • Sobel edge detection (both magnitude and direction) • Extract and analyze contours from edge maps • Use contour properties (area, perimeter, circularity) to identify seeds • Compare with Assignment 1's clustering results • Count seeds based on closed contours
+	Dataset 2: BSDS500 Natural Images
+	Apply the SAME edge detection pipeline to BSDS500 images: • Use subset of BSDS500 training images (e.g., 50 images) • Preprocess using Assignment 2's preprocessing.py • Apply Canny and Sobel edge detection for contour/boundary detection • Extract contours and analyze boundary quality • Compare with human-annotated ground truth boundaries • Document differences in edge detection vs simple object counting • Analyze: How does edge detection perform on complex natural scenes?
+	Comparative Analysis
+	Required comparisons: • Canny vs Sobel performance on each dataset • Edge detection performance: Seeds vs The other dataset• Which edge detector works better for which object type and why? • Parameter sensitivity analysis across datasets • Quantitative metrics: MAE, accuracy, precision/recall of edge-based counting • Visual comparison: side-by-side edge maps for both datasets
+	
+
+3. Mandatory Comparisons
+📊 Required Comparative Analyses
+Your report must include:
+A. Comparison within Dataset 1 (Seeds):
+* Side-by-side: Assignment 2 clustering vs Canny edges vs Sobel edges
+* Per-image count comparison: Classical Clustering | Canny | Sobel
+* Improvement analysis: % of failure cases from Assignment 1 that edge detection fixes
+B. Comparison within Dataset 2 (BSDS500):
+* Canny vs Sobel performance on complex natural scenes
+* Boundary detection quality vs human annotations (if available)
+* Parameter sensitivity: Do optimal parameters differ from seeds?
+* Edge quality: How do natural scene edges compare to simple object boundaries?
+C. Cross-Dataset Comparison:
+* Does edge detection generalize? Compare: Simple objects (seeds) vs Complex scenes (BSDS500)
+* Which task is better suited for edge detection: counting or boundary detection?
+* Computational cost comparison across datasets
+* Parameter transfer: Can parameters optimized for seeds work for BSDS500?
+D. Evaluation Metrics:
+* Use Assignment 2's evaluate.py for BOTH datasets to ensure fair comparison
+* Report: MAE, RMSE, % accuracy for each method on each dataset
+	
+
+________________
+
+
+Deliverables
+Submit all deliverables as a single compressed archive (.zip or .tar.gz) via the course portal.
+1. Source Code
+* Primary Implementation: Python scripts implementing edge detection (Canny + Sobel) for both datasets
+* Dataset Processing: Separate scripts or functions for Dataset 1 (seeds) and Dataset 2 
+* Integration Code: Script that imports from Assignment 2's baseline_code/
+* Comparison Script: Code that compares edge detection across both datasets
+* README: Setup instructions and how to run on both datasets
+
+
+2. Technical Report (LaTeX)
+A comprehensive report (8-12 pages) with the following structure:
+Section
+	Content Requirements
+	Abstract
+	Summary of Assignment 3 baseline, your feature-based approaches, and comparative results (150-200 words)
+	Introduction & Background
+	• Recap of Assignment 2 performance and limitations • Motivation for feature-based methods 
+	Methodology
+	• Detailed description of edge detection implementation (Canny & Sobel) • Parameter choices and tuning process for each dataset • How you integrated Assignment 1's preprocessing • Preprocessing adaptations for Dataset 2 • Visual pipeline diagrams showing data flow for both datasets
+	Results - Dataset 1
+	• Performance table: Assignment 2 Clustering vs Canny vs Sobel • Edge maps visualization • Per-image comparison on failure cases • Statistical significance testing
+	Results - Dataset 2
+	• Performance table: Canny vs Sobel on BSDS500 • Edge/boundary maps visualization • Comparison with human annotations (optional) • Analysis: Boundary detection quality vs object counting
+	Cross-Dataset Analysis
+	• Why does edge detection perform differently: seeds vs natural scenes? • Which task suits edge detection better: counting vs boundary detection? • Generalization: Can parameters/methods transfer between simple and complex images? • Lessons learned about edge detection applicability
+	Discussion
+	• Limitations of hand-crafted features • Scenarios requiring learned representations (preview Assignment 4) • Practical deployment considerations
+	Conclusion
+	Best performing approach and recommendation for production deployment
+	
+
+3. Edge Detection Outputs Package (Required for Assignment 4)
+📦 Assignment 4 Will Need These Outputs
+Create an edge_outputs/ folder containing:
+Dataset 1 (Seeds):
+* dataset1_canny_edges/: Canny edge maps for all validation images
+* dataset1_sobel_edges/: Sobel edge maps (magnitude and direction)
+* dataset1_contours.pkl: Extracted contour data
+* dataset1_edge_counts.csv: Counts from edge-based methods
+Dataset 2 :
+* dataset2_canny_edges/: Canny edge maps
+* dataset2_sobel_edges/: Sobel edge maps
+* dataset2_contours.pkl: Extracted contour data
+* dataset2_edge_counts.csv: Counts from edge-based methods
+Comparison Data:
+* cross_dataset_analysis.json: Performance comparison between datasets
+* best_method_per_dataset.txt: Which edge detector works best for each
+* edge_features_combined.npy: 
+Assignment 4 will use edge-based features as input to ML models!

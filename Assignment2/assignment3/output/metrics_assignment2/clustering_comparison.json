@@ -1,0 +1,1130 @@
+[
+  {
+    "image": "1",
+    "kmeans_fg_area_pct": 0.3,
+    "dbscan_fg_area_pct": 0.3,
+    "dbscan_n_clusters": 1,
+    "iou": 0.9857,
+    "analysis": "K-Means covers 0.3% of pixels as foreground. DBSCAN identifies 1 spatial clusters covering 0.3% of pixels. IoU between the two masks = 0.986. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "10",
+    "kmeans_fg_area_pct": 2.69,
+    "dbscan_fg_area_pct": 2.66,
+    "dbscan_n_clusters": 10,
+    "iou": 0.9874,
+    "analysis": "K-Means covers 2.69% of pixels as foreground. DBSCAN identifies 10 spatial clusters covering 2.66% of pixels. IoU between the two masks = 0.987. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "100",
+    "kmeans_fg_area_pct": 25.58,
+    "dbscan_fg_area_pct": 25.54,
+    "dbscan_n_clusters": 1,
+    "iou": 0.9982,
+    "analysis": "K-Means covers 25.58% of pixels as foreground. DBSCAN identifies 1 spatial clusters covering 25.54% of pixels. IoU between the two masks = 0.998. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "101",
+    "kmeans_fg_area_pct": 25.96,
+    "dbscan_fg_area_pct": 25.92,
+    "dbscan_n_clusters": 1,
+    "iou": 0.9981,
+    "analysis": "K-Means covers 25.96% of pixels as foreground. DBSCAN identifies 1 spatial clusters covering 25.92% of pixels. IoU between the two masks = 0.998. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "102",
+    "kmeans_fg_area_pct": 25.9,
+    "dbscan_fg_area_pct": 25.84,
+    "dbscan_n_clusters": 1,
+    "iou": 0.9978,
+    "analysis": "K-Means covers 25.9% of pixels as foreground. DBSCAN identifies 1 spatial clusters covering 25.84% of pixels. IoU between the two masks = 0.998. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "103",
+    "kmeans_fg_area_pct": 26.25,
+    "dbscan_fg_area_pct": 26.19,
+    "dbscan_n_clusters": 1,
+    "iou": 0.9978,
+    "analysis": "K-Means covers 26.25% of pixels as foreground. DBSCAN identifies 1 spatial clusters covering 26.19% of pixels. IoU between the two masks = 0.998. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "104",
+    "kmeans_fg_area_pct": 26.56,
+    "dbscan_fg_area_pct": 26.5,
+    "dbscan_n_clusters": 1,
+    "iou": 0.9979,
+    "analysis": "K-Means covers 26.56% of pixels as foreground. DBSCAN identifies 1 spatial clusters covering 26.5% of pixels. IoU between the two masks = 0.998. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "105",
+    "kmeans_fg_area_pct": 26.78,
+    "dbscan_fg_area_pct": 26.72,
+    "dbscan_n_clusters": 2,
+    "iou": 0.9978,
+    "analysis": "K-Means covers 26.78% of pixels as foreground. DBSCAN identifies 2 spatial clusters covering 26.72% of pixels. IoU between the two masks = 0.998. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "106",
+    "kmeans_fg_area_pct": 27.07,
+    "dbscan_fg_area_pct": 27.02,
+    "dbscan_n_clusters": 2,
+    "iou": 0.9983,
+    "analysis": "K-Means covers 27.07% of pixels as foreground. DBSCAN identifies 2 spatial clusters covering 27.02% of pixels. IoU between the two masks = 0.998. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "107",
+    "kmeans_fg_area_pct": 27.25,
+    "dbscan_fg_area_pct": 27.2,
+    "dbscan_n_clusters": 2,
+    "iou": 0.9984,
+    "analysis": "K-Means covers 27.25% of pixels as foreground. DBSCAN identifies 2 spatial clusters covering 27.2% of pixels. IoU between the two masks = 0.998. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "109",
+    "kmeans_fg_area_pct": 27.52,
+    "dbscan_fg_area_pct": 27.47,
+    "dbscan_n_clusters": 2,
+    "iou": 0.9979,
+    "analysis": "K-Means covers 27.52% of pixels as foreground. DBSCAN identifies 2 spatial clusters covering 27.47% of pixels. IoU between the two masks = 0.998. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "11",
+    "kmeans_fg_area_pct": 3.02,
+    "dbscan_fg_area_pct": 2.99,
+    "dbscan_n_clusters": 11,
+    "iou": 0.9889,
+    "analysis": "K-Means covers 3.02% of pixels as foreground. DBSCAN identifies 11 spatial clusters covering 2.99% of pixels. IoU between the two masks = 0.989. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "110",
+    "kmeans_fg_area_pct": 30.65,
+    "dbscan_fg_area_pct": 30.55,
+    "dbscan_n_clusters": 4,
+    "iou": 0.9967,
+    "analysis": "K-Means covers 30.65% of pixels as foreground. DBSCAN identifies 4 spatial clusters covering 30.55% of pixels. IoU between the two masks = 0.997. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "111",
+    "kmeans_fg_area_pct": 30.53,
+    "dbscan_fg_area_pct": 30.45,
+    "dbscan_n_clusters": 4,
+    "iou": 0.9973,
+    "analysis": "K-Means covers 30.53% of pixels as foreground. DBSCAN identifies 4 spatial clusters covering 30.45% of pixels. IoU between the two masks = 0.997. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "112",
+    "kmeans_fg_area_pct": 31.01,
+    "dbscan_fg_area_pct": 30.92,
+    "dbscan_n_clusters": 5,
+    "iou": 0.9971,
+    "analysis": "K-Means covers 31.01% of pixels as foreground. DBSCAN identifies 5 spatial clusters covering 30.92% of pixels. IoU between the two masks = 0.997. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "113",
+    "kmeans_fg_area_pct": 31.29,
+    "dbscan_fg_area_pct": 31.21,
+    "dbscan_n_clusters": 5,
+    "iou": 0.9974,
+    "analysis": "K-Means covers 31.29% of pixels as foreground. DBSCAN identifies 5 spatial clusters covering 31.21% of pixels. IoU between the two masks = 0.997. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "114",
+    "kmeans_fg_area_pct": 34.8,
+    "dbscan_fg_area_pct": 34.7,
+    "dbscan_n_clusters": 6,
+    "iou": 0.9973,
+    "analysis": "K-Means covers 34.8% of pixels as foreground. DBSCAN identifies 6 spatial clusters covering 34.7% of pixels. IoU between the two masks = 0.997. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "115",
+    "kmeans_fg_area_pct": 34.74,
+    "dbscan_fg_area_pct": 34.64,
+    "dbscan_n_clusters": 7,
+    "iou": 0.9973,
+    "analysis": "K-Means covers 34.74% of pixels as foreground. DBSCAN identifies 7 spatial clusters covering 34.64% of pixels. IoU between the two masks = 0.997. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "116",
+    "kmeans_fg_area_pct": 34.88,
+    "dbscan_fg_area_pct": 34.78,
+    "dbscan_n_clusters": 6,
+    "iou": 0.9973,
+    "analysis": "K-Means covers 34.88% of pixels as foreground. DBSCAN identifies 6 spatial clusters covering 34.78% of pixels. IoU between the two masks = 0.997. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "118",
+    "kmeans_fg_area_pct": 34.39,
+    "dbscan_fg_area_pct": 34.29,
+    "dbscan_n_clusters": 5,
+    "iou": 0.997,
+    "analysis": "K-Means covers 34.39% of pixels as foreground. DBSCAN identifies 5 spatial clusters covering 34.29% of pixels. IoU between the two masks = 0.997. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "119",
+    "kmeans_fg_area_pct": 34.6,
+    "dbscan_fg_area_pct": 34.48,
+    "dbscan_n_clusters": 6,
+    "iou": 0.9966,
+    "analysis": "K-Means covers 34.6% of pixels as foreground. DBSCAN identifies 6 spatial clusters covering 34.48% of pixels. IoU between the two masks = 0.997. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "12",
+    "kmeans_fg_area_pct": 3.13,
+    "dbscan_fg_area_pct": 3.1,
+    "dbscan_n_clusters": 12,
+    "iou": 0.9879,
+    "analysis": "K-Means covers 3.13% of pixels as foreground. DBSCAN identifies 12 spatial clusters covering 3.1% of pixels. IoU between the two masks = 0.988. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "120",
+    "kmeans_fg_area_pct": 34.66,
+    "dbscan_fg_area_pct": 34.56,
+    "dbscan_n_clusters": 6,
+    "iou": 0.9969,
+    "analysis": "K-Means covers 34.66% of pixels as foreground. DBSCAN identifies 6 spatial clusters covering 34.56% of pixels. IoU between the two masks = 0.997. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "121",
+    "kmeans_fg_area_pct": 34.53,
+    "dbscan_fg_area_pct": 34.41,
+    "dbscan_n_clusters": 7,
+    "iou": 0.9966,
+    "analysis": "K-Means covers 34.53% of pixels as foreground. DBSCAN identifies 7 spatial clusters covering 34.41% of pixels. IoU between the two masks = 0.997. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "122",
+    "kmeans_fg_area_pct": 35.29,
+    "dbscan_fg_area_pct": 35.18,
+    "dbscan_n_clusters": 7,
+    "iou": 0.9969,
+    "analysis": "K-Means covers 35.29% of pixels as foreground. DBSCAN identifies 7 spatial clusters covering 35.18% of pixels. IoU between the two masks = 0.997. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "123",
+    "kmeans_fg_area_pct": 35.41,
+    "dbscan_fg_area_pct": 35.3,
+    "dbscan_n_clusters": 7,
+    "iou": 0.9968,
+    "analysis": "K-Means covers 35.41% of pixels as foreground. DBSCAN identifies 7 spatial clusters covering 35.3% of pixels. IoU between the two masks = 0.997. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "124",
+    "kmeans_fg_area_pct": 35.56,
+    "dbscan_fg_area_pct": 35.43,
+    "dbscan_n_clusters": 8,
+    "iou": 0.9964,
+    "analysis": "K-Means covers 35.56% of pixels as foreground. DBSCAN identifies 8 spatial clusters covering 35.43% of pixels. IoU between the two masks = 0.996. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "125",
+    "kmeans_fg_area_pct": 35.25,
+    "dbscan_fg_area_pct": 35.13,
+    "dbscan_n_clusters": 7,
+    "iou": 0.9966,
+    "analysis": "K-Means covers 35.25% of pixels as foreground. DBSCAN identifies 7 spatial clusters covering 35.13% of pixels. IoU between the two masks = 0.997. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "126",
+    "kmeans_fg_area_pct": 36.07,
+    "dbscan_fg_area_pct": 35.95,
+    "dbscan_n_clusters": 7,
+    "iou": 0.9968,
+    "analysis": "K-Means covers 36.07% of pixels as foreground. DBSCAN identifies 7 spatial clusters covering 35.95% of pixels. IoU between the two masks = 0.997. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "127",
+    "kmeans_fg_area_pct": 35.79,
+    "dbscan_fg_area_pct": 35.65,
+    "dbscan_n_clusters": 7,
+    "iou": 0.9959,
+    "analysis": "K-Means covers 35.79% of pixels as foreground. DBSCAN identifies 7 spatial clusters covering 35.65% of pixels. IoU between the two masks = 0.996. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "128",
+    "kmeans_fg_area_pct": 35.79,
+    "dbscan_fg_area_pct": 35.65,
+    "dbscan_n_clusters": 7,
+    "iou": 0.996,
+    "analysis": "K-Means covers 35.79% of pixels as foreground. DBSCAN identifies 7 spatial clusters covering 35.65% of pixels. IoU between the two masks = 0.996. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "129",
+    "kmeans_fg_area_pct": 36.18,
+    "dbscan_fg_area_pct": 36.05,
+    "dbscan_n_clusters": 8,
+    "iou": 0.9963,
+    "analysis": "K-Means covers 36.18% of pixels as foreground. DBSCAN identifies 8 spatial clusters covering 36.05% of pixels. IoU between the two masks = 0.996. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "13",
+    "kmeans_fg_area_pct": 3.48,
+    "dbscan_fg_area_pct": 3.44,
+    "dbscan_n_clusters": 12,
+    "iou": 0.9865,
+    "analysis": "K-Means covers 3.48% of pixels as foreground. DBSCAN identifies 12 spatial clusters covering 3.44% of pixels. IoU between the two masks = 0.987. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "130",
+    "kmeans_fg_area_pct": 36.56,
+    "dbscan_fg_area_pct": 36.43,
+    "dbscan_n_clusters": 8,
+    "iou": 0.9965,
+    "analysis": "K-Means covers 36.56% of pixels as foreground. DBSCAN identifies 8 spatial clusters covering 36.43% of pixels. IoU between the two masks = 0.997. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "131",
+    "kmeans_fg_area_pct": 36.67,
+    "dbscan_fg_area_pct": 36.54,
+    "dbscan_n_clusters": 9,
+    "iou": 0.9963,
+    "analysis": "K-Means covers 36.67% of pixels as foreground. DBSCAN identifies 9 spatial clusters covering 36.54% of pixels. IoU between the two masks = 0.996. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "132",
+    "kmeans_fg_area_pct": 36.55,
+    "dbscan_fg_area_pct": 36.4,
+    "dbscan_n_clusters": 9,
+    "iou": 0.996,
+    "analysis": "K-Means covers 36.55% of pixels as foreground. DBSCAN identifies 9 spatial clusters covering 36.4% of pixels. IoU between the two masks = 0.996. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "133",
+    "kmeans_fg_area_pct": 36.75,
+    "dbscan_fg_area_pct": 36.61,
+    "dbscan_n_clusters": 9,
+    "iou": 0.9964,
+    "analysis": "K-Means covers 36.75% of pixels as foreground. DBSCAN identifies 9 spatial clusters covering 36.61% of pixels. IoU between the two masks = 0.996. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "134",
+    "kmeans_fg_area_pct": 37.21,
+    "dbscan_fg_area_pct": 37.07,
+    "dbscan_n_clusters": 9,
+    "iou": 0.996,
+    "analysis": "K-Means covers 37.21% of pixels as foreground. DBSCAN identifies 9 spatial clusters covering 37.07% of pixels. IoU between the two masks = 0.996. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "135",
+    "kmeans_fg_area_pct": 38.38,
+    "dbscan_fg_area_pct": 38.26,
+    "dbscan_n_clusters": 7,
+    "iou": 0.9968,
+    "analysis": "K-Means covers 38.38% of pixels as foreground. DBSCAN identifies 7 spatial clusters covering 38.26% of pixels. IoU between the two masks = 0.997. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "136",
+    "kmeans_fg_area_pct": 35.56,
+    "dbscan_fg_area_pct": 35.41,
+    "dbscan_n_clusters": 7,
+    "iou": 0.9958,
+    "analysis": "K-Means covers 35.56% of pixels as foreground. DBSCAN identifies 7 spatial clusters covering 35.41% of pixels. IoU between the two masks = 0.996. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "137",
+    "kmeans_fg_area_pct": 35.85,
+    "dbscan_fg_area_pct": 35.68,
+    "dbscan_n_clusters": 8,
+    "iou": 0.9952,
+    "analysis": "K-Means covers 35.85% of pixels as foreground. DBSCAN identifies 8 spatial clusters covering 35.68% of pixels. IoU between the two masks = 0.995. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "138",
+    "kmeans_fg_area_pct": 35.42,
+    "dbscan_fg_area_pct": 35.24,
+    "dbscan_n_clusters": 9,
+    "iou": 0.995,
+    "analysis": "K-Means covers 35.42% of pixels as foreground. DBSCAN identifies 9 spatial clusters covering 35.24% of pixels. IoU between the two masks = 0.995. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "139",
+    "kmeans_fg_area_pct": 36.75,
+    "dbscan_fg_area_pct": 36.59,
+    "dbscan_n_clusters": 8,
+    "iou": 0.9957,
+    "analysis": "K-Means covers 36.75% of pixels as foreground. DBSCAN identifies 8 spatial clusters covering 36.59% of pixels. IoU between the two masks = 0.996. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "14",
+    "kmeans_fg_area_pct": 3.78,
+    "dbscan_fg_area_pct": 3.74,
+    "dbscan_n_clusters": 13,
+    "iou": 0.9889,
+    "analysis": "K-Means covers 3.78% of pixels as foreground. DBSCAN identifies 13 spatial clusters covering 3.74% of pixels. IoU between the two masks = 0.989. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "140",
+    "kmeans_fg_area_pct": 38.3,
+    "dbscan_fg_area_pct": 38.14,
+    "dbscan_n_clusters": 7,
+    "iou": 0.9958,
+    "analysis": "K-Means covers 38.3% of pixels as foreground. DBSCAN identifies 7 spatial clusters covering 38.14% of pixels. IoU between the two masks = 0.996. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "141",
+    "kmeans_fg_area_pct": 36.28,
+    "dbscan_fg_area_pct": 36.11,
+    "dbscan_n_clusters": 7,
+    "iou": 0.9953,
+    "analysis": "K-Means covers 36.28% of pixels as foreground. DBSCAN identifies 7 spatial clusters covering 36.11% of pixels. IoU between the two masks = 0.995. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "142",
+    "kmeans_fg_area_pct": 39.47,
+    "dbscan_fg_area_pct": 39.31,
+    "dbscan_n_clusters": 7,
+    "iou": 0.9958,
+    "analysis": "K-Means covers 39.47% of pixels as foreground. DBSCAN identifies 7 spatial clusters covering 39.31% of pixels. IoU between the two masks = 0.996. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "143",
+    "kmeans_fg_area_pct": 39.63,
+    "dbscan_fg_area_pct": 39.47,
+    "dbscan_n_clusters": 7,
+    "iou": 0.9961,
+    "analysis": "K-Means covers 39.63% of pixels as foreground. DBSCAN identifies 7 spatial clusters covering 39.47% of pixels. IoU between the two masks = 0.996. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "144",
+    "kmeans_fg_area_pct": 39.52,
+    "dbscan_fg_area_pct": 39.34,
+    "dbscan_n_clusters": 7,
+    "iou": 0.9955,
+    "analysis": "K-Means covers 39.52% of pixels as foreground. DBSCAN identifies 7 spatial clusters covering 39.34% of pixels. IoU between the two masks = 0.996. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "15",
+    "kmeans_fg_area_pct": 4.05,
+    "dbscan_fg_area_pct": 4.0,
+    "dbscan_n_clusters": 14,
+    "iou": 0.988,
+    "analysis": "K-Means covers 4.05% of pixels as foreground. DBSCAN identifies 14 spatial clusters covering 4.0% of pixels. IoU between the two masks = 0.988. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "16",
+    "kmeans_fg_area_pct": 4.15,
+    "dbscan_fg_area_pct": 4.09,
+    "dbscan_n_clusters": 14,
+    "iou": 0.9872,
+    "analysis": "K-Means covers 4.15% of pixels as foreground. DBSCAN identifies 14 spatial clusters covering 4.09% of pixels. IoU between the two masks = 0.987. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "17",
+    "kmeans_fg_area_pct": 4.42,
+    "dbscan_fg_area_pct": 4.37,
+    "dbscan_n_clusters": 15,
+    "iou": 0.9882,
+    "analysis": "K-Means covers 4.42% of pixels as foreground. DBSCAN identifies 15 spatial clusters covering 4.37% of pixels. IoU between the two masks = 0.988. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "18",
+    "kmeans_fg_area_pct": 4.64,
+    "dbscan_fg_area_pct": 4.58,
+    "dbscan_n_clusters": 15,
+    "iou": 0.9881,
+    "analysis": "K-Means covers 4.64% of pixels as foreground. DBSCAN identifies 15 spatial clusters covering 4.58% of pixels. IoU between the two masks = 0.988. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "19",
+    "kmeans_fg_area_pct": 4.81,
+    "dbscan_fg_area_pct": 4.76,
+    "dbscan_n_clusters": 16,
+    "iou": 0.9901,
+    "analysis": "K-Means covers 4.81% of pixels as foreground. DBSCAN identifies 16 spatial clusters covering 4.76% of pixels. IoU between the two masks = 0.990. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "2",
+    "kmeans_fg_area_pct": 0.53,
+    "dbscan_fg_area_pct": 0.52,
+    "dbscan_n_clusters": 2,
+    "iou": 0.9842,
+    "analysis": "K-Means covers 0.53% of pixels as foreground. DBSCAN identifies 2 spatial clusters covering 0.52% of pixels. IoU between the two masks = 0.984. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "20",
+    "kmeans_fg_area_pct": 4.89,
+    "dbscan_fg_area_pct": 4.83,
+    "dbscan_n_clusters": 17,
+    "iou": 0.9887,
+    "analysis": "K-Means covers 4.89% of pixels as foreground. DBSCAN identifies 17 spatial clusters covering 4.83% of pixels. IoU between the two masks = 0.989. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "21",
+    "kmeans_fg_area_pct": 5.41,
+    "dbscan_fg_area_pct": 5.35,
+    "dbscan_n_clusters": 17,
+    "iou": 0.9889,
+    "analysis": "K-Means covers 5.41% of pixels as foreground. DBSCAN identifies 17 spatial clusters covering 5.35% of pixels. IoU between the two masks = 0.989. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "22",
+    "kmeans_fg_area_pct": 5.51,
+    "dbscan_fg_area_pct": 5.46,
+    "dbscan_n_clusters": 16,
+    "iou": 0.9906,
+    "analysis": "K-Means covers 5.51% of pixels as foreground. DBSCAN identifies 16 spatial clusters covering 5.46% of pixels. IoU between the two masks = 0.991. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "23",
+    "kmeans_fg_area_pct": 5.98,
+    "dbscan_fg_area_pct": 5.93,
+    "dbscan_n_clusters": 16,
+    "iou": 0.9907,
+    "analysis": "K-Means covers 5.98% of pixels as foreground. DBSCAN identifies 16 spatial clusters covering 5.93% of pixels. IoU between the two masks = 0.991. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "24",
+    "kmeans_fg_area_pct": 6.2,
+    "dbscan_fg_area_pct": 6.13,
+    "dbscan_n_clusters": 17,
+    "iou": 0.9889,
+    "analysis": "K-Means covers 6.2% of pixels as foreground. DBSCAN identifies 17 spatial clusters covering 6.13% of pixels. IoU between the two masks = 0.989. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "25",
+    "kmeans_fg_area_pct": 6.52,
+    "dbscan_fg_area_pct": 6.45,
+    "dbscan_n_clusters": 17,
+    "iou": 0.9899,
+    "analysis": "K-Means covers 6.52% of pixels as foreground. DBSCAN identifies 17 spatial clusters covering 6.45% of pixels. IoU between the two masks = 0.990. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "26",
+    "kmeans_fg_area_pct": 6.59,
+    "dbscan_fg_area_pct": 6.53,
+    "dbscan_n_clusters": 18,
+    "iou": 0.9906,
+    "analysis": "K-Means covers 6.59% of pixels as foreground. DBSCAN identifies 18 spatial clusters covering 6.53% of pixels. IoU between the two masks = 0.991. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "27",
+    "kmeans_fg_area_pct": 7.06,
+    "dbscan_fg_area_pct": 6.99,
+    "dbscan_n_clusters": 17,
+    "iou": 0.9901,
+    "analysis": "K-Means covers 7.06% of pixels as foreground. DBSCAN identifies 17 spatial clusters covering 6.99% of pixels. IoU between the two masks = 0.990. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "28",
+    "kmeans_fg_area_pct": 7.23,
+    "dbscan_fg_area_pct": 7.15,
+    "dbscan_n_clusters": 18,
+    "iou": 0.9894,
+    "analysis": "K-Means covers 7.23% of pixels as foreground. DBSCAN identifies 18 spatial clusters covering 7.15% of pixels. IoU between the two masks = 0.989. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "29",
+    "kmeans_fg_area_pct": 7.49,
+    "dbscan_fg_area_pct": 7.42,
+    "dbscan_n_clusters": 19,
+    "iou": 0.9903,
+    "analysis": "K-Means covers 7.49% of pixels as foreground. DBSCAN identifies 19 spatial clusters covering 7.42% of pixels. IoU between the two masks = 0.990. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "3",
+    "kmeans_fg_area_pct": 0.85,
+    "dbscan_fg_area_pct": 0.84,
+    "dbscan_n_clusters": 3,
+    "iou": 0.9851,
+    "analysis": "K-Means covers 0.85% of pixels as foreground. DBSCAN identifies 3 spatial clusters covering 0.84% of pixels. IoU between the two masks = 0.985. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "30",
+    "kmeans_fg_area_pct": 7.9,
+    "dbscan_fg_area_pct": 7.81,
+    "dbscan_n_clusters": 19,
+    "iou": 0.9883,
+    "analysis": "K-Means covers 7.9% of pixels as foreground. DBSCAN identifies 19 spatial clusters covering 7.81% of pixels. IoU between the two masks = 0.988. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "31",
+    "kmeans_fg_area_pct": 7.99,
+    "dbscan_fg_area_pct": 7.9,
+    "dbscan_n_clusters": 20,
+    "iou": 0.9884,
+    "analysis": "K-Means covers 7.99% of pixels as foreground. DBSCAN identifies 20 spatial clusters covering 7.9% of pixels. IoU between the two masks = 0.988. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "32",
+    "kmeans_fg_area_pct": 8.28,
+    "dbscan_fg_area_pct": 8.19,
+    "dbscan_n_clusters": 21,
+    "iou": 0.9892,
+    "analysis": "K-Means covers 8.28% of pixels as foreground. DBSCAN identifies 21 spatial clusters covering 8.19% of pixels. IoU between the two masks = 0.989. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "33",
+    "kmeans_fg_area_pct": 8.23,
+    "dbscan_fg_area_pct": 8.14,
+    "dbscan_n_clusters": 23,
+    "iou": 0.988,
+    "analysis": "K-Means covers 8.23% of pixels as foreground. DBSCAN identifies 23 spatial clusters covering 8.14% of pixels. IoU between the two masks = 0.988. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "34",
+    "kmeans_fg_area_pct": 8.48,
+    "dbscan_fg_area_pct": 8.36,
+    "dbscan_n_clusters": 24,
+    "iou": 0.9866,
+    "analysis": "K-Means covers 8.48% of pixels as foreground. DBSCAN identifies 24 spatial clusters covering 8.36% of pixels. IoU between the two masks = 0.987. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "35",
+    "kmeans_fg_area_pct": 8.82,
+    "dbscan_fg_area_pct": 8.71,
+    "dbscan_n_clusters": 25,
+    "iou": 0.9878,
+    "analysis": "K-Means covers 8.82% of pixels as foreground. DBSCAN identifies 25 spatial clusters covering 8.71% of pixels. IoU between the two masks = 0.988. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "36",
+    "kmeans_fg_area_pct": 9.19,
+    "dbscan_fg_area_pct": 9.09,
+    "dbscan_n_clusters": 25,
+    "iou": 0.9883,
+    "analysis": "K-Means covers 9.19% of pixels as foreground. DBSCAN identifies 25 spatial clusters covering 9.09% of pixels. IoU between the two masks = 0.988. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "37",
+    "kmeans_fg_area_pct": 9.42,
+    "dbscan_fg_area_pct": 9.31,
+    "dbscan_n_clusters": 25,
+    "iou": 0.9882,
+    "analysis": "K-Means covers 9.42% of pixels as foreground. DBSCAN identifies 25 spatial clusters covering 9.31% of pixels. IoU between the two masks = 0.988. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "38",
+    "kmeans_fg_area_pct": 9.5,
+    "dbscan_fg_area_pct": 9.38,
+    "dbscan_n_clusters": 26,
+    "iou": 0.9873,
+    "analysis": "K-Means covers 9.5% of pixels as foreground. DBSCAN identifies 26 spatial clusters covering 9.38% of pixels. IoU between the two masks = 0.987. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "39",
+    "kmeans_fg_area_pct": 9.68,
+    "dbscan_fg_area_pct": 9.56,
+    "dbscan_n_clusters": 27,
+    "iou": 0.9876,
+    "analysis": "K-Means covers 9.68% of pixels as foreground. DBSCAN identifies 27 spatial clusters covering 9.56% of pixels. IoU between the two masks = 0.988. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "4",
+    "kmeans_fg_area_pct": 1.2,
+    "dbscan_fg_area_pct": 1.19,
+    "dbscan_n_clusters": 4,
+    "iou": 0.989,
+    "analysis": "K-Means covers 1.2% of pixels as foreground. DBSCAN identifies 4 spatial clusters covering 1.19% of pixels. IoU between the two masks = 0.989. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "40",
+    "kmeans_fg_area_pct": 9.99,
+    "dbscan_fg_area_pct": 9.88,
+    "dbscan_n_clusters": 28,
+    "iou": 0.9888,
+    "analysis": "K-Means covers 9.99% of pixels as foreground. DBSCAN identifies 28 spatial clusters covering 9.88% of pixels. IoU between the two masks = 0.989. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "41",
+    "kmeans_fg_area_pct": 10.36,
+    "dbscan_fg_area_pct": 10.24,
+    "dbscan_n_clusters": 29,
+    "iou": 0.9882,
+    "analysis": "K-Means covers 10.36% of pixels as foreground. DBSCAN identifies 29 spatial clusters covering 10.24% of pixels. IoU between the two masks = 0.988. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "42",
+    "kmeans_fg_area_pct": 11.1,
+    "dbscan_fg_area_pct": 10.98,
+    "dbscan_n_clusters": 28,
+    "iou": 0.9891,
+    "analysis": "K-Means covers 11.1% of pixels as foreground. DBSCAN identifies 28 spatial clusters covering 10.98% of pixels. IoU between the two masks = 0.989. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "43",
+    "kmeans_fg_area_pct": 11.07,
+    "dbscan_fg_area_pct": 10.94,
+    "dbscan_n_clusters": 29,
+    "iou": 0.9878,
+    "analysis": "K-Means covers 11.07% of pixels as foreground. DBSCAN identifies 29 spatial clusters covering 10.94% of pixels. IoU between the two masks = 0.988. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "44",
+    "kmeans_fg_area_pct": 11.12,
+    "dbscan_fg_area_pct": 10.98,
+    "dbscan_n_clusters": 30,
+    "iou": 0.9879,
+    "analysis": "K-Means covers 11.12% of pixels as foreground. DBSCAN identifies 30 spatial clusters covering 10.98% of pixels. IoU between the two masks = 0.988. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "45",
+    "kmeans_fg_area_pct": 11.29,
+    "dbscan_fg_area_pct": 11.16,
+    "dbscan_n_clusters": 30,
+    "iou": 0.9885,
+    "analysis": "K-Means covers 11.29% of pixels as foreground. DBSCAN identifies 30 spatial clusters covering 11.16% of pixels. IoU between the two masks = 0.989. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "46",
+    "kmeans_fg_area_pct": 11.92,
+    "dbscan_fg_area_pct": 11.77,
+    "dbscan_n_clusters": 28,
+    "iou": 0.988,
+    "analysis": "K-Means covers 11.92% of pixels as foreground. DBSCAN identifies 28 spatial clusters covering 11.77% of pixels. IoU between the two masks = 0.988. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "47",
+    "kmeans_fg_area_pct": 11.91,
+    "dbscan_fg_area_pct": 11.78,
+    "dbscan_n_clusters": 28,
+    "iou": 0.9889,
+    "analysis": "K-Means covers 11.91% of pixels as foreground. DBSCAN identifies 28 spatial clusters covering 11.78% of pixels. IoU between the two masks = 0.989. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "48",
+    "kmeans_fg_area_pct": 12.39,
+    "dbscan_fg_area_pct": 12.24,
+    "dbscan_n_clusters": 28,
+    "iou": 0.9875,
+    "analysis": "K-Means covers 12.39% of pixels as foreground. DBSCAN identifies 28 spatial clusters covering 12.24% of pixels. IoU between the two masks = 0.988. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "49",
+    "kmeans_fg_area_pct": 12.59,
+    "dbscan_fg_area_pct": 12.44,
+    "dbscan_n_clusters": 29,
+    "iou": 0.9881,
+    "analysis": "K-Means covers 12.59% of pixels as foreground. DBSCAN identifies 29 spatial clusters covering 12.44% of pixels. IoU between the two masks = 0.988. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "5",
+    "kmeans_fg_area_pct": 1.41,
+    "dbscan_fg_area_pct": 1.4,
+    "dbscan_n_clusters": 5,
+    "iou": 0.9871,
+    "analysis": "K-Means covers 1.41% of pixels as foreground. DBSCAN identifies 5 spatial clusters covering 1.4% of pixels. IoU between the two masks = 0.987. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "50",
+    "kmeans_fg_area_pct": 12.8,
+    "dbscan_fg_area_pct": 12.64,
+    "dbscan_n_clusters": 30,
+    "iou": 0.9876,
+    "analysis": "K-Means covers 12.8% of pixels as foreground. DBSCAN identifies 30 spatial clusters covering 12.64% of pixels. IoU between the two masks = 0.988. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "51",
+    "kmeans_fg_area_pct": 12.96,
+    "dbscan_fg_area_pct": 12.81,
+    "dbscan_n_clusters": 30,
+    "iou": 0.9886,
+    "analysis": "K-Means covers 12.96% of pixels as foreground. DBSCAN identifies 30 spatial clusters covering 12.81% of pixels. IoU between the two masks = 0.989. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "52",
+    "kmeans_fg_area_pct": 13.38,
+    "dbscan_fg_area_pct": 13.24,
+    "dbscan_n_clusters": 29,
+    "iou": 0.989,
+    "analysis": "K-Means covers 13.38% of pixels as foreground. DBSCAN identifies 29 spatial clusters covering 13.24% of pixels. IoU between the two masks = 0.989. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "53",
+    "kmeans_fg_area_pct": 13.74,
+    "dbscan_fg_area_pct": 13.58,
+    "dbscan_n_clusters": 28,
+    "iou": 0.9885,
+    "analysis": "K-Means covers 13.74% of pixels as foreground. DBSCAN identifies 28 spatial clusters covering 13.58% of pixels. IoU between the two masks = 0.989. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "54",
+    "kmeans_fg_area_pct": 14.0,
+    "dbscan_fg_area_pct": 13.84,
+    "dbscan_n_clusters": 29,
+    "iou": 0.9885,
+    "analysis": "K-Means covers 14.0% of pixels as foreground. DBSCAN identifies 29 spatial clusters covering 13.84% of pixels. IoU between the two masks = 0.989. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "55",
+    "kmeans_fg_area_pct": 14.02,
+    "dbscan_fg_area_pct": 13.85,
+    "dbscan_n_clusters": 30,
+    "iou": 0.9875,
+    "analysis": "K-Means covers 14.02% of pixels as foreground. DBSCAN identifies 30 spatial clusters covering 13.85% of pixels. IoU between the two masks = 0.988. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "56",
+    "kmeans_fg_area_pct": 14.4,
+    "dbscan_fg_area_pct": 14.23,
+    "dbscan_n_clusters": 30,
+    "iou": 0.9882,
+    "analysis": "K-Means covers 14.4% of pixels as foreground. DBSCAN identifies 30 spatial clusters covering 14.23% of pixels. IoU between the two masks = 0.988. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "57",
+    "kmeans_fg_area_pct": 14.64,
+    "dbscan_fg_area_pct": 14.47,
+    "dbscan_n_clusters": 29,
+    "iou": 0.9882,
+    "analysis": "K-Means covers 14.64% of pixels as foreground. DBSCAN identifies 29 spatial clusters covering 14.47% of pixels. IoU between the two masks = 0.988. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "58",
+    "kmeans_fg_area_pct": 14.85,
+    "dbscan_fg_area_pct": 14.68,
+    "dbscan_n_clusters": 31,
+    "iou": 0.9885,
+    "analysis": "K-Means covers 14.85% of pixels as foreground. DBSCAN identifies 31 spatial clusters covering 14.68% of pixels. IoU between the two masks = 0.989. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "59",
+    "kmeans_fg_area_pct": 14.88,
+    "dbscan_fg_area_pct": 14.7,
+    "dbscan_n_clusters": 32,
+    "iou": 0.9878,
+    "analysis": "K-Means covers 14.88% of pixels as foreground. DBSCAN identifies 32 spatial clusters covering 14.7% of pixels. IoU between the two masks = 0.988. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "6",
+    "kmeans_fg_area_pct": 1.69,
+    "dbscan_fg_area_pct": 1.68,
+    "dbscan_n_clusters": 6,
+    "iou": 0.9906,
+    "analysis": "K-Means covers 1.69% of pixels as foreground. DBSCAN identifies 6 spatial clusters covering 1.68% of pixels. IoU between the two masks = 0.991. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "60",
+    "kmeans_fg_area_pct": 15.21,
+    "dbscan_fg_area_pct": 15.02,
+    "dbscan_n_clusters": 30,
+    "iou": 0.988,
+    "analysis": "K-Means covers 15.21% of pixels as foreground. DBSCAN identifies 30 spatial clusters covering 15.02% of pixels. IoU between the two masks = 0.988. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "61",
+    "kmeans_fg_area_pct": 15.4,
+    "dbscan_fg_area_pct": 15.21,
+    "dbscan_n_clusters": 32,
+    "iou": 0.9877,
+    "analysis": "K-Means covers 15.4% of pixels as foreground. DBSCAN identifies 32 spatial clusters covering 15.21% of pixels. IoU between the two masks = 0.988. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "62",
+    "kmeans_fg_area_pct": 15.74,
+    "dbscan_fg_area_pct": 15.56,
+    "dbscan_n_clusters": 33,
+    "iou": 0.9887,
+    "analysis": "K-Means covers 15.74% of pixels as foreground. DBSCAN identifies 33 spatial clusters covering 15.56% of pixels. IoU between the two masks = 0.989. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "63",
+    "kmeans_fg_area_pct": 15.9,
+    "dbscan_fg_area_pct": 15.7,
+    "dbscan_n_clusters": 34,
+    "iou": 0.9875,
+    "analysis": "K-Means covers 15.9% of pixels as foreground. DBSCAN identifies 34 spatial clusters covering 15.7% of pixels. IoU between the two masks = 0.988. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "64",
+    "kmeans_fg_area_pct": 16.47,
+    "dbscan_fg_area_pct": 16.26,
+    "dbscan_n_clusters": 37,
+    "iou": 0.9877,
+    "analysis": "K-Means covers 16.47% of pixels as foreground. DBSCAN identifies 37 spatial clusters covering 16.26% of pixels. IoU between the two masks = 0.988. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "65",
+    "kmeans_fg_area_pct": 16.48,
+    "dbscan_fg_area_pct": 16.28,
+    "dbscan_n_clusters": 39,
+    "iou": 0.9881,
+    "analysis": "K-Means covers 16.48% of pixels as foreground. DBSCAN identifies 39 spatial clusters covering 16.28% of pixels. IoU between the two masks = 0.988. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "67",
+    "kmeans_fg_area_pct": 16.68,
+    "dbscan_fg_area_pct": 16.47,
+    "dbscan_n_clusters": 38,
+    "iou": 0.9875,
+    "analysis": "K-Means covers 16.68% of pixels as foreground. DBSCAN identifies 38 spatial clusters covering 16.47% of pixels. IoU between the two masks = 0.988. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "68",
+    "kmeans_fg_area_pct": 16.81,
+    "dbscan_fg_area_pct": 16.61,
+    "dbscan_n_clusters": 37,
+    "iou": 0.9883,
+    "analysis": "K-Means covers 16.81% of pixels as foreground. DBSCAN identifies 37 spatial clusters covering 16.61% of pixels. IoU between the two masks = 0.988. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "69",
+    "kmeans_fg_area_pct": 17.15,
+    "dbscan_fg_area_pct": 16.93,
+    "dbscan_n_clusters": 38,
+    "iou": 0.9872,
+    "analysis": "K-Means covers 17.15% of pixels as foreground. DBSCAN identifies 38 spatial clusters covering 16.93% of pixels. IoU between the two masks = 0.987. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "7",
+    "kmeans_fg_area_pct": 1.94,
+    "dbscan_fg_area_pct": 1.91,
+    "dbscan_n_clusters": 7,
+    "iou": 0.9869,
+    "analysis": "K-Means covers 1.94% of pixels as foreground. DBSCAN identifies 7 spatial clusters covering 1.91% of pixels. IoU between the two masks = 0.987. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "70",
+    "kmeans_fg_area_pct": 17.61,
+    "dbscan_fg_area_pct": 17.4,
+    "dbscan_n_clusters": 33,
+    "iou": 0.9879,
+    "analysis": "K-Means covers 17.61% of pixels as foreground. DBSCAN identifies 33 spatial clusters covering 17.4% of pixels. IoU between the two masks = 0.988. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "71",
+    "kmeans_fg_area_pct": 17.84,
+    "dbscan_fg_area_pct": 17.63,
+    "dbscan_n_clusters": 34,
+    "iou": 0.9886,
+    "analysis": "K-Means covers 17.84% of pixels as foreground. DBSCAN identifies 34 spatial clusters covering 17.63% of pixels. IoU between the two masks = 0.989. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "72",
+    "kmeans_fg_area_pct": 18.25,
+    "dbscan_fg_area_pct": 18.05,
+    "dbscan_n_clusters": 35,
+    "iou": 0.9891,
+    "analysis": "K-Means covers 18.25% of pixels as foreground. DBSCAN identifies 35 spatial clusters covering 18.05% of pixels. IoU between the two masks = 0.989. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "73",
+    "kmeans_fg_area_pct": 18.35,
+    "dbscan_fg_area_pct": 18.13,
+    "dbscan_n_clusters": 36,
+    "iou": 0.9885,
+    "analysis": "K-Means covers 18.35% of pixels as foreground. DBSCAN identifies 36 spatial clusters covering 18.13% of pixels. IoU between the two masks = 0.989. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "74",
+    "kmeans_fg_area_pct": 18.35,
+    "dbscan_fg_area_pct": 18.15,
+    "dbscan_n_clusters": 35,
+    "iou": 0.9891,
+    "analysis": "K-Means covers 18.35% of pixels as foreground. DBSCAN identifies 35 spatial clusters covering 18.15% of pixels. IoU between the two masks = 0.989. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "75",
+    "kmeans_fg_area_pct": 19.01,
+    "dbscan_fg_area_pct": 18.81,
+    "dbscan_n_clusters": 35,
+    "iou": 0.9892,
+    "analysis": "K-Means covers 19.01% of pixels as foreground. DBSCAN identifies 35 spatial clusters covering 18.81% of pixels. IoU between the two masks = 0.989. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "76",
+    "kmeans_fg_area_pct": 19.16,
+    "dbscan_fg_area_pct": 18.96,
+    "dbscan_n_clusters": 34,
+    "iou": 0.9896,
+    "analysis": "K-Means covers 19.16% of pixels as foreground. DBSCAN identifies 34 spatial clusters covering 18.96% of pixels. IoU between the two masks = 0.990. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "77",
+    "kmeans_fg_area_pct": 19.17,
+    "dbscan_fg_area_pct": 18.96,
+    "dbscan_n_clusters": 35,
+    "iou": 0.989,
+    "analysis": "K-Means covers 19.17% of pixels as foreground. DBSCAN identifies 35 spatial clusters covering 18.96% of pixels. IoU between the two masks = 0.989. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "78",
+    "kmeans_fg_area_pct": 19.34,
+    "dbscan_fg_area_pct": 19.16,
+    "dbscan_n_clusters": 35,
+    "iou": 0.9905,
+    "analysis": "K-Means covers 19.34% of pixels as foreground. DBSCAN identifies 35 spatial clusters covering 19.16% of pixels. IoU between the two masks = 0.991. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "79",
+    "kmeans_fg_area_pct": 19.67,
+    "dbscan_fg_area_pct": 19.45,
+    "dbscan_n_clusters": 34,
+    "iou": 0.9889,
+    "analysis": "K-Means covers 19.67% of pixels as foreground. DBSCAN identifies 34 spatial clusters covering 19.45% of pixels. IoU between the two masks = 0.989. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "8",
+    "kmeans_fg_area_pct": 2.11,
+    "dbscan_fg_area_pct": 2.09,
+    "dbscan_n_clusters": 8,
+    "iou": 0.9916,
+    "analysis": "K-Means covers 2.11% of pixels as foreground. DBSCAN identifies 8 spatial clusters covering 2.09% of pixels. IoU between the two masks = 0.992. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "80",
+    "kmeans_fg_area_pct": 20.15,
+    "dbscan_fg_area_pct": 19.94,
+    "dbscan_n_clusters": 34,
+    "iou": 0.9893,
+    "analysis": "K-Means covers 20.15% of pixels as foreground. DBSCAN identifies 34 spatial clusters covering 19.94% of pixels. IoU between the two masks = 0.989. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "81",
+    "kmeans_fg_area_pct": 20.34,
+    "dbscan_fg_area_pct": 20.13,
+    "dbscan_n_clusters": 34,
+    "iou": 0.9897,
+    "analysis": "K-Means covers 20.34% of pixels as foreground. DBSCAN identifies 34 spatial clusters covering 20.13% of pixels. IoU between the two masks = 0.990. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "82",
+    "kmeans_fg_area_pct": 20.38,
+    "dbscan_fg_area_pct": 20.18,
+    "dbscan_n_clusters": 35,
+    "iou": 0.9901,
+    "analysis": "K-Means covers 20.38% of pixels as foreground. DBSCAN identifies 35 spatial clusters covering 20.18% of pixels. IoU between the two masks = 0.990. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "83",
+    "kmeans_fg_area_pct": 20.68,
+    "dbscan_fg_area_pct": 20.47,
+    "dbscan_n_clusters": 36,
+    "iou": 0.9898,
+    "analysis": "K-Means covers 20.68% of pixels as foreground. DBSCAN identifies 36 spatial clusters covering 20.47% of pixels. IoU between the two masks = 0.990. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "84",
+    "kmeans_fg_area_pct": 21.2,
+    "dbscan_fg_area_pct": 20.98,
+    "dbscan_n_clusters": 35,
+    "iou": 0.9895,
+    "analysis": "K-Means covers 21.2% of pixels as foreground. DBSCAN identifies 35 spatial clusters covering 20.98% of pixels. IoU between the two masks = 0.990. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "85",
+    "kmeans_fg_area_pct": 21.23,
+    "dbscan_fg_area_pct": 20.98,
+    "dbscan_n_clusters": 37,
+    "iou": 0.9881,
+    "analysis": "K-Means covers 21.23% of pixels as foreground. DBSCAN identifies 37 spatial clusters covering 20.98% of pixels. IoU between the two masks = 0.988. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "86",
+    "kmeans_fg_area_pct": 21.06,
+    "dbscan_fg_area_pct": 20.8,
+    "dbscan_n_clusters": 39,
+    "iou": 0.9879,
+    "analysis": "K-Means covers 21.06% of pixels as foreground. DBSCAN identifies 39 spatial clusters covering 20.8% of pixels. IoU between the two masks = 0.988. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "87",
+    "kmeans_fg_area_pct": 21.18,
+    "dbscan_fg_area_pct": 20.93,
+    "dbscan_n_clusters": 39,
+    "iou": 0.9885,
+    "analysis": "K-Means covers 21.18% of pixels as foreground. DBSCAN identifies 39 spatial clusters covering 20.93% of pixels. IoU between the two masks = 0.989. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "88",
+    "kmeans_fg_area_pct": 21.33,
+    "dbscan_fg_area_pct": 21.1,
+    "dbscan_n_clusters": 40,
+    "iou": 0.9891,
+    "analysis": "K-Means covers 21.33% of pixels as foreground. DBSCAN identifies 40 spatial clusters covering 21.1% of pixels. IoU between the two masks = 0.989. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "89",
+    "kmeans_fg_area_pct": 21.56,
+    "dbscan_fg_area_pct": 21.32,
+    "dbscan_n_clusters": 38,
+    "iou": 0.9889,
+    "analysis": "K-Means covers 21.56% of pixels as foreground. DBSCAN identifies 38 spatial clusters covering 21.32% of pixels. IoU between the two masks = 0.989. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "9",
+    "kmeans_fg_area_pct": 2.47,
+    "dbscan_fg_area_pct": 2.44,
+    "dbscan_n_clusters": 9,
+    "iou": 0.9882,
+    "analysis": "K-Means covers 2.47% of pixels as foreground. DBSCAN identifies 9 spatial clusters covering 2.44% of pixels. IoU between the two masks = 0.988. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "90",
+    "kmeans_fg_area_pct": 22.38,
+    "dbscan_fg_area_pct": 22.14,
+    "dbscan_n_clusters": 35,
+    "iou": 0.9896,
+    "analysis": "K-Means covers 22.38% of pixels as foreground. DBSCAN identifies 35 spatial clusters covering 22.14% of pixels. IoU between the two masks = 0.990. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "91",
+    "kmeans_fg_area_pct": 22.26,
+    "dbscan_fg_area_pct": 22.02,
+    "dbscan_n_clusters": 36,
+    "iou": 0.9894,
+    "analysis": "K-Means covers 22.26% of pixels as foreground. DBSCAN identifies 36 spatial clusters covering 22.02% of pixels. IoU between the two masks = 0.989. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "92",
+    "kmeans_fg_area_pct": 23.17,
+    "dbscan_fg_area_pct": 22.93,
+    "dbscan_n_clusters": 36,
+    "iou": 0.9895,
+    "analysis": "K-Means covers 23.17% of pixels as foreground. DBSCAN identifies 36 spatial clusters covering 22.93% of pixels. IoU between the two masks = 0.990. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "93",
+    "kmeans_fg_area_pct": 22.85,
+    "dbscan_fg_area_pct": 22.61,
+    "dbscan_n_clusters": 35,
+    "iou": 0.9893,
+    "analysis": "K-Means covers 22.85% of pixels as foreground. DBSCAN identifies 35 spatial clusters covering 22.61% of pixels. IoU between the two masks = 0.989. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "94",
+    "kmeans_fg_area_pct": 23.01,
+    "dbscan_fg_area_pct": 22.79,
+    "dbscan_n_clusters": 33,
+    "iou": 0.9904,
+    "analysis": "K-Means covers 23.01% of pixels as foreground. DBSCAN identifies 33 spatial clusters covering 22.79% of pixels. IoU between the two masks = 0.990. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "95",
+    "kmeans_fg_area_pct": 23.19,
+    "dbscan_fg_area_pct": 22.94,
+    "dbscan_n_clusters": 33,
+    "iou": 0.9894,
+    "analysis": "K-Means covers 23.19% of pixels as foreground. DBSCAN identifies 33 spatial clusters covering 22.94% of pixels. IoU between the two masks = 0.989. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "96",
+    "kmeans_fg_area_pct": 22.98,
+    "dbscan_fg_area_pct": 22.74,
+    "dbscan_n_clusters": 34,
+    "iou": 0.9897,
+    "analysis": "K-Means covers 22.98% of pixels as foreground. DBSCAN identifies 34 spatial clusters covering 22.74% of pixels. IoU between the two masks = 0.990. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "97",
+    "kmeans_fg_area_pct": 23.29,
+    "dbscan_fg_area_pct": 23.06,
+    "dbscan_n_clusters": 35,
+    "iou": 0.99,
+    "analysis": "K-Means covers 23.29% of pixels as foreground. DBSCAN identifies 35 spatial clusters covering 23.06% of pixels. IoU between the two masks = 0.990. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "98",
+    "kmeans_fg_area_pct": 23.23,
+    "dbscan_fg_area_pct": 23.19,
+    "dbscan_n_clusters": 2,
+    "iou": 0.9982,
+    "analysis": "K-Means covers 23.23% of pixels as foreground. DBSCAN identifies 2 spatial clusters covering 23.19% of pixels. IoU between the two masks = 0.998. Both methods agree well (IoU > 0.7)."
+  },
+  {
+    "image": "99",
+    "kmeans_fg_area_pct": 25.16,
+    "dbscan_fg_area_pct": 25.11,
+    "dbscan_n_clusters": 1,
+    "iou": 0.9981,
+    "analysis": "K-Means covers 25.16% of pixels as foreground. DBSCAN identifies 1 spatial clusters covering 25.11% of pixels. IoU between the two masks = 0.998. Both methods agree well (IoU > 0.7)."
+  }
+]

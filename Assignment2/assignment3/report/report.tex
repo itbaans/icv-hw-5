@@ -1,0 +1,558 @@
+% ============================================================
+% AgriTech SeedCounter – Classical CV Pipeline Report
+% ============================================================
+\documentclass[12pt,a4paper]{article}
+
+% Packages
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage{float}
+\usepackage{subcaption}
+\usepackage{xcolor}
+\usepackage{caption}
+\usepackage{array}
+\usepackage{parskip}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue!70!black,
+    urlcolor=blue!70!black,
+    citecolor=blue!70!black
+}
+
+\title{
+    \large Computer Vision Assignment 1\\[0.4em]
+    \LARGE \textbf{Automated Seed Counting via Classical\\Image Processing Pipeline}\\[0.4em]
+    \large AgriTech SeedCounter
+}
+\author{[Student Name]}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+% ============================================================
+\section*{Abstract}
+\addcontentsline{toc}{section}{Abstract}
+% ============================================================
+
+Accurate seed counting is a critical task in precision agriculture, enabling
+farmers and researchers to assess sowing density, crop yield, and seed
+viability. Manual counting is error-prone and infeasible at scale. This report
+presents a classical image processing pipeline for automated seed counting,
+comprising six sequential stages: preprocessing (noise reduction, CLAHE),
+K-Means and DBSCAN clustering, adaptive thresholding, morphological
+refinement, connected component analysis (CCA), and distance-transform
+watershed for touching-seed separation. The pipeline was evaluated on a
+dataset of 141 images spanning 1–144 seeds. On a representative 20-image
+stratified sample, the baseline configuration achieved $50\%$ accuracy within
+a $\pm 10\%$ error threshold (MAE\,=\,21.25, RMSE\,=\,34.23). A systematic
+ablation study of seven configuration variants revealed that adaptive
+thresholding consistently outperforms Otsu, and that morphological closing is
+essential for high-density images. The primary failure mode is seed
+under-segmentation at densities above \(\sim\!70\) seeds per image, where
+merged foreground blobs cause watershed marker fragmentation.
+
+\newpage
+
+% ============================================================
+\section{Introduction}
+% ============================================================
+
+\subsection{Problem Statement and Real-World Context}
+
+Seed counting underlies several agricultural workflows: quality control in
+seed production, sowing-rate calibration, and germination-rate studies.
+Commercially, pharmaceutical and food companies also require accurate counting
+of small, granular objects on trays. The traditional approach---human manual
+counting---is both tedious (a tray of 140 seeds requires several minutes) and
+subject to fatigue errors. Automated counting via computer vision offers a
+scalable, consistent alternative.
+
+The input images in this assignment were captured under controlled laboratory
+lighting on a uniform background, with seeds arranged in clusters of varying
+density (1 to 144 seeds per image, $3024 \times 3024$ pixels). Ground truth
+counts are encoded in the image filename.
+
+\subsection{Challenges in Automated Seed Counting}
+
+Several factors make automated seed counting non-trivial even under controlled
+conditions:
+
+\begin{itemize}
+    \item \textbf{Touching and overlapping seeds.} At high densities, adjacent
+          seeds merge into a single foreground blob, making per-object
+          segmentation difficult.
+    \item \textbf{Reflections and shadows.} Seed surfaces produce specular
+          reflections, and seed stacks cast shadows on their neighbours,
+          creating intensity gradients within a single seed.
+    \item \textbf{Scale variation.} The same pipeline must handle images with
+          1 seed (very large object, most of the foreground) and 140+ seeds
+          (small, densely packed objects).
+    \item \textbf{Background noise.} Dust, scratches, and subtle texture in the
+          tray surface can generate false positive foreground pixels.
+\end{itemize}
+
+\subsection{Objectives}
+
+\begin{enumerate}
+    \item Design and implement a six-stage classical CV pipeline for seed
+          counting.
+    \item Evaluate the impact of individual design choices (filter type,
+          thresholding strategy, morphological configuration, segmentation
+          source, and counting method) through a systematic ablation study.
+    \item Identify the primary failure modes and propose directions for
+          improvement.
+\end{enumerate}
+
+\newpage
+
+% ============================================================
+\section{Methodology}
+% ============================================================
+
+The pipeline is orchestrated in \texttt{main.py} and consists of the six
+stages described below. Configuration is centralised in
+\texttt{baseline\_code/config.yaml} for reproducibility.
+
+\subsection{Stage 1: Preprocessing}
+
+Raw BGR images are converted to grayscale before noise reduction. Three
+filters are computed in parallel and automatically ranked by Laplacian
+variance (a sharpness proxy):
+
+\begin{itemize}
+    \item \textbf{Gaussian blur} ($7 \times 7$ kernel, $\sigma = 0$): fast,
+          effective for additive Gaussian noise.
+    \item \textbf{Median filter} ($k = 5$): edge-preserving, better for salt-
+          and-pepper noise.
+    \item \textbf{Bilateral filter} ($d = 9$, $\sigma_c = 75$, $\sigma_s = 75$):
+          smooths within regions while preserving sharp boundaries.
+\end{itemize}
+
+The filter producing the highest Laplacian variance is selected automatically.
+In practice, Gaussian was selected on most images due to the relatively low
+noise level. CLAHE (Contrast Limited Adaptive Histogram Equalization,
+$\text{clipLimit}=2.0$, $8 \times 8$ grid) is always applied to the grayscale
+image to improve local contrast before thresholding.
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{0.24\textwidth}
+        \includegraphics[width=\textwidth]{../output/experiments/B2/100/grayscale_100.png}
+        \caption{Grayscale Input}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.24\textwidth}
+        \includegraphics[width=\textwidth]{../output/experiments/B2/100/adaptive_100.png}
+        \caption{Adaptive Threshold}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.24\textwidth}
+        \includegraphics[width=\textwidth]{../output/experiments/B2/100/morphological_100.png}
+        \caption{Morphology}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.24\textwidth}
+        \includegraphics[width=\textwidth]{../output/experiments/B2/100/watershed_100.png}
+        \caption{Watershed}
+    \end{subfigure}
+    \caption{Visualisation of the baseline pipeline stages (Image: 100.jpg).}
+    \label{fig:pipeline_stages}
+\end{figure}
+
+\subsection{Stage 2: Clustering (K-Means and DBSCAN)}
+
+Two unsupervised clustering algorithms are run on the preprocessed grayscale
+image to produce alternative binary foreground masks:
+
+\begin{itemize}
+    \item \textbf{K-Means} ($K = 2$, pixel intensity feature): assigns each
+          pixel to seed or background. The brighter cluster is taken as
+          foreground.
+    \item \textbf{DBSCAN} ($\varepsilon = 3$, $\text{min\_samples} = 10$, on
+          pixel coordinates + intensity): identifies spatially coherent
+          clusters. Cluster labels form a binary mask.
+\end{itemize}
+
+Clustering masks are compared against the thresholding mask via IoU for
+logging. In the baseline configuration, the \emph{threshold mask} (Stage 3)
+feeds downstream stages; K-Means and DBSCAN masks are explored as alternative
+segmentation sources in Group D.
+
+\subsection{Stage 3: Thresholding}
+
+Two strategies are evaluated:
+
+\begin{itemize}
+    \item \textbf{Adaptive Gaussian thresholding} (block size\,=\,31,
+          $C = 4$): computes a spatially varying threshold accounting for
+          local illumination changes. This is the \emph{baseline} choice.
+    \item \textbf{Otsu's global threshold}: finds a single optimal threshold
+          by maximising inter-class variance. Effective on bimodal histograms
+          but fails under uneven lighting.
+\end{itemize}
+
+\subsection{Stage 4: Morphological Refinement}
+
+Binary masks are refined by a two-step morphological sequence applied to the
+chosen segmentation mask:
+
+\begin{enumerate}
+    \item \textbf{Closing} (ellipse kernel $25 \times 25$, 2 iterations):
+          fills intra-seed holes created by reflections and bridges narrow
+          gaps between touching seeds.
+    \item \textbf{Opening} (ellipse kernel $5 \times 5$, 1 iteration):
+          removes small noise blobs and debris after closing.
+\end{enumerate}
+
+The order (Closing $\rightarrow$ Opening) is deliberate: closing first
+consolidates seed regions, and opening then removes the newly introduced edge
+artefacts.
+
+\subsection{Stage 5: Object Counting --- CCA}
+
+Connected Component Analysis (CCA, 8-connectivity) labels all foreground
+blobs in the morphological mask. Components are filtered by:
+
+\begin{itemize}
+    \item \textbf{Area}: $[\text{min\_area},\, \text{max\_area}] = [8000,\, 200000]$
+          pixels (full resolution).
+    \item \textbf{Circularity}: $\frac{4\pi A}{P^2} \geq 0$ (threshold
+          relaxed to zero in baseline; configurable).
+    \item \textbf{Aspect ratio}: $\leq 3.0$ (excludes elongated debris).
+    \item \textbf{Edge proximity}: components $>75\%$ outside the image
+          boundary are excluded.
+\end{itemize}
+
+CCA is used as a cross-check and as the counting method in the CCA-only
+ablation (E2).
+
+\subsection{Stage 6: Watershed Segmentation (Post-processing)}
+
+Watershed is the primary counting mechanism for touching seeds.
+
+\begin{enumerate}
+    \item \textbf{Distance transform} on the morphological mask produces a
+          distance map where pixels far from the boundary have high values.
+    \item \textbf{Sure foreground} thresholded at $0.4 \times$ peak distance
+          identifies confident seed centres.
+    \item \textbf{Sure background} obtained by dilating the mask with an
+          $11 \times 11$ ellipse kernel ($\times 3$).
+    \item \textbf{Marker labelling}: connected components of sure-foreground
+          become markers; uncertain pixels (sure\_bg $-$ sure\_fg) are set to
+          zero.
+    \item \textbf{\texttt{cv2.watershed}} floods from each marker, drawing
+          one-pixel boundaries between adjacent seeds.
+    \item \textbf{Overlap correction}: watershed regions whose area exceeds
+          \texttt{max\_area} are assumed to be merged seeds. Their estimated
+          seed count is $\lceil A / \tilde{A} \rceil$ where $\tilde{A}$ is the
+          median area of ``clean'' (area-bounded) watershed regions.
+\end{enumerate}
+
+A marker cap of 500 prevents pathological slowdowns on images where noise
+fragments the sure-foreground into thousands of regions.
+
+\subsection{Comparative Analysis of Alternative Approaches}
+
+Seven variant configurations were evaluated against the baseline using a
+20-image stratified sample and the experiment runner
+(\texttt{run\_experiments.py}). Results are presented in Section~\ref{sec:results}.
+
+\newpage
+
+% ============================================================
+\section{Results}
+\label{sec:results}
+% ============================================================
+
+\subsection{Quantitative Results}
+
+All experiments were evaluated on a 20-image stratified sample Covering the
+full density range (1--140 seeds).
+
+\begin{table}[H]
+\centering
+\caption{Pipeline variant comparison. Accuracy = fraction of images where
+$|\hat{y} - y| / y \leq 10\%$. Best value per column is \textbf{bolded}.}
+\label{tab:results}
+\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{l l l r r r r}
+\toprule
+\textbf{ID} & \textbf{Group} & \textbf{Description} & \textbf{MAE} $\downarrow$ & \textbf{RMSE} $\downarrow$ & \textbf{Acc.\%} $\uparrow$ & \textbf{Fails} $\downarrow$ \\
+\midrule
+\textbf{★} & Baseline & Gaussian + Adaptive-G + Close→Open & \textbf{21.25} & \textbf{34.23} & \textbf{50.0} & \textbf{10} \\
+\midrule
+A2 & Filter    & Median filter (instead of Gaussian) & 21.60 & 34.68 & 45.0 & 11 \\
+B2 & Threshold & Otsu global threshold               & 40.70 & 60.86 & 25.0 & 15 \\
+C2 & Morphology & No closing (opening only)          & 66.80 & 81.00 & 0.0  & 20 \\
+\midrule
+D2 & Seg.\ Source & K-Means mask → CCA + Watershed  & 41.15 & 60.95 & 30.0 & 14 \\
+D3 & Seg.\ Source & DBSCAN mask → CCA + Watershed   & 41.15 & 61.48 & 35.0 & 13 \\
+\midrule
+E2 & Counter  & CCA only (no watershed)              & 43.80 & 65.22 & 30.0 & 14 \\
+E3 & Counter  & Blob detection only                  & 66.70 & 80.87 & 0.0  & 20 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Key Findings}
+
+\paragraph{Adaptive thresholding is essential (B2 vs.\ baseline).}
+Switching from adaptive to global Otsu nearly halves accuracy (25\% vs.\ 50\%).
+Otsu computes a single threshold over the whole image; on images with lighting
+gradients or seed shadows, this threshold is too low in dark regions (leaving
+seeds undersegmented) and too high in bright regions (splitting seeds
+prematurely).
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{../output/experiments/B2/100/adaptive_100.png}
+        \caption{Adaptive Thresholding (Baseline)}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{../output/experiments/B2/100/otsu_100.png}
+        \caption{Otsu's Global Threshold (B2)}
+    \end{subfigure}
+    \caption{Comparison of thresholding methods on 100.jpg. Otsu fails to 
+    segment individual seeds in dense regions compared to the adaptive approach.}
+    \label{fig:threshold_comp}
+\end{figure}
+
+\paragraph{Morphological closing is critical (C2 vs.\ baseline).}
+Removing the closing operation reduces accuracy to \textbf{0\%}—every image
+exceeds the 10\% error threshold. Without closing, seed reflections create
+holes in each seed's foreground mask. CCA then sees one large shell-like blob
+per seed cluster rather than filled discs, making watershed unable to identify
+distinct centres and drastically under-counting.
+
+\paragraph{Watershed adds significant value over CCA alone (E2 vs.\ baseline).}
+CCA-only (E2) achieves 30\% accuracy vs.\ 50\% for the full pipeline. For
+touching seeds, CCA merges adjacent seeds into one component and counts it as
+1; watershed's distance-transform markers split these blobs correctly.
+
+\paragraph{Blob detection fails at high density (E3).}
+Blob detection with LoG achieved 0\% accuracy. At high densities, the scale
+parameter must be tuned per image, and overlapping blobs suppress each other
+via the blob's non-maximum suppression.
+
+\paragraph{Segmentation source matters less than expected (D2, D3 vs.\ baseline).}
+K-Means and DBSCAN masks improve slightly over each other (35\% vs.\ 30\%)
+but both fall short of the threshold-based baseline (50\%). The adaptive
+threshold is computed on the locally contrast-enhanced (CLAHE) image, which
+makes it more discriminative than raw-pixel K-Means clustering.
+
+\subsection{Performance Across Image Conditions}
+
+\begin{table}[H]
+\centering
+\caption{Baseline performance by image density category (from validation log).}
+\label{tab:density}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{l r r r r}
+\toprule
+\textbf{Density} & \textbf{GT Range} & \textbf{Examples} & \textbf{Typical Error} & \textbf{Within 10\%} \\
+\midrule
+Sparse  & 1--10   & 1.jpg, 5.jpg, 10.jpg  & 0             & Yes \\
+Medium  & 11--50  & 25.jpg, 50.jpg         & 0--11         & Yes (25.jpg), borderline (50.jpg) \\
+Dense   & 51--144  & 100.jpg, 120.jpg+      & 90--130       & No \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The pipeline achieves near-perfect accuracy on sparse images ($\leq 25$
+seeds). Performance degrades sharply above $\sim\!70$ seeds, where watershed
+produces fewer than 20\% of the true markers due to blob merging.
+
+\newpage
+
+% ============================================================
+\section{Error Analysis}
+% ============================================================
+
+\subsection{Primary Failure Mode: Blob Merging at High Density}
+
+At densities above $\sim\!70$ seeds, the morphological mask consists of a
+single connected blob covering nearly all seeds simultaneously. The distance
+transform of this blob has a broad, flat peak rather than distinct local
+maxima at each seed centre. The sure-foreground threshold (0.4 $\times$ peak)
+then captures only one or two high-distance pixels, generating very few
+markers—resulting in a severe under-count.
+
+\textbf{Quantitative evidence:} On \texttt{100.jpg} (GT\,=\,100), CCA
+returns 1 (the whole mass is one blob), watershed returns 10 (10 markers
+found in the distance transform plateau). Error\,=\,90\%.
+
+\begin{table}[H]
+\centering
+\caption{Selected per-image results from the validation log (baseline config).}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{l r r r r l}
+\toprule
+\textbf{Image} & \textbf{GT} & \textbf{CCA} & \textbf{Watershed} & \textbf{Error \%} & \textbf{Status} \\
+\midrule
+1.jpg   & 1   & 1  & 1  & 0.0\%  & \textcolor{green!60!black}{Correct} \\
+5.jpg   & 5   & 5  & 5  & 0.0\%  & \textcolor{green!60!black}{Correct} \\
+10.jpg  & 10  & 10 & 10 & 0.0\%  & \textcolor{green!60!black}{Correct} \\
+25.jpg  & 25  & 23 & 25 & 0.0\%  & \textcolor{green!60!black}{Correct} \\
+50.jpg  & 50  & 39 & 46 & 8.0\%  & \textcolor{orange}{Near-miss} \\
+100.jpg & 100 & 1  & 10 & 90.0\% & \textcolor{red}{Failure} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Contributing Causes}
+
+\begin{enumerate}
+    \item \textbf{Seed touching at high density.} Seeds in the $50$--$144$
+          range physically overlap in the image plane. Morphological closing
+          then bridges the remaining gaps, creating one super-blob.
+    \item \textbf{Uniform distance-transform plateau.} When seeds form a
+          large compact blob, the distance transform has a wide plateau near
+          the blob centre. The sure-foreground threshold ($0.4 \times$
+          peak) captures only the very centre cluster of pixels, not one
+          local maximum per seed.
+    \item \textbf{Reflections breaking the mask.} Specular highlights on
+          seed surfaces appear as dark pixels (after inversion) or white
+          holes in the foreground mask. Despite closing, these can prevent
+          some seeds from being properly filled, reducing the distance
+          transform peak inside them.
+    \item \textbf{Marker cap (500) and fallback.} For images where the
+          sure-foreground fragments into $>500$ components (e.g.\ due to
+          noise on the morphology mask), the watershed step is skipped and
+          pure sure-fg CCA is used. This fallback under-counts when
+          fragmentation reflects noise rather than seeds.
+\end{enumerate}
+
+\subsection{Failure Cases}
+
+The most consistent failure pattern is observed on images with filenames
+$\geq 70$ (GT $\geq 70$). The baseline achieves 0/10 correct predictions on
+this subset of the 20-image sample, while achieving 10/10 on filenames $\leq
+50$ (GT $\leq 50$). This clean density threshold suggests the failure
+mechanism is structural (blob merging) rather than stochastic.
+
+\newpage
+
+% ============================================================
+\section{Discussion}
+% ============================================================
+
+\subsection{Limitations of Classical Image Processing}
+
+\paragraph{Fixed area thresholds.}
+The \texttt{min\_area} and \texttt{max\_area} parameters in CCA and watershed
+post-processing are set for full-resolution ($3024 \times 3024$) images. Any
+downscaling for speed requires proportional scaling of these thresholds, adding
+a brittle preprocessing dependency.
+
+\paragraph{Non-adaptive distance threshold.}
+The watershed sure-foreground threshold (0.4) is a single global parameter.
+For a low-density image with well-separated seeds, 0.4 works well. For
+a high-density image with merged blobs, the effective threshold should be
+\emph{higher} to isolate individual seed centres. Adapting this parameter
+per-image is a clear improvement direction.
+
+\paragraph{Colour-agnostic pipeline.}
+The entire pipeline operates on a single grayscale channel. Seed colour
+differs noticeably from tray background colour. Incorporating a simple
+colour-based mask (e.g.\ hue thresholding in HSV space) could provide a
+cleaner initial foreground estimate than pure intensity thresholding.
+
+\subsection{Scenarios Where the Approach Works Well}
+
+\begin{itemize}
+    \item \textbf{Sparse to medium images ($\leq 50$ seeds):} CCA perfectly
+          separates all seeds; watershed correctly resolves the handful of
+          touching pairs. Near-zero error.
+    \item \textbf{Uniform lighting:} Adaptive thresholding is highly effective
+          when block-level contrast is consistent, which holds for standard
+          laboratory setups.
+    \item \textbf{Well-separated seeds:} Both CCA and watershed are provably
+          accurate when seeds do not touch (each seed $\rightarrow$ one
+          component $\rightarrow$ one marker).
+\end{itemize}
+
+\subsection{Scenarios Where the Approach Fails}
+
+\begin{itemize}
+    \item \textbf{High density ($>70$ seeds):} Blob merging causes catastrophic
+          under-counting regardless of thresholding or morphological strategy.
+    \item \textbf{Extreme lighting:} Very strong directional lighting creates
+          per-seed shadows that mimic separate objects, causing over-counting.
+    \item \textbf{Seed pile-up (3D):} Seeds placed on top of each other violate
+          the flat-tray assumption; their projected area is smaller than a
+          single-layer seed.
+\end{itemize}
+
+\subsection{Ideas for Improvement}
+
+\begin{itemize}
+    \item \textbf{High-resolution local analysis:} Processing sub-windows of the
+          image at higher resolution to resolve fine boundaries between seeds.
+    \item \textbf{Adaptive watershed parameters:} Use image-level density
+          estimates (e.g.\ foreground pixel fraction) to automatically tune
+          the sure-foreground threshold on a per-image basis.
+    \item \textbf{Multi-scale distance transform:} Apply the distance
+          transform at multiple scales and aggregate markers to handle both
+          small (sparse) and large (dense) seed configurations.
+    \item \textbf{Shape-priors and Elliptical Fitting:} Leverage the fact that
+          most seeds are approximately elliptical to fit parametric models to
+          fragmented blobs, improving count accuracy in dense clusters.
+\end{itemize}
+
+\subsection{Real-World Deployment Considerations}
+
+\begin{itemize}
+    \item \textbf{Processing time:} The baseline pipeline takes approximately
+          5--8 seconds per full-resolution image (including DBSCAN clustering).
+          For a production tray-scanner running at 200 trays/hour, a GPU-based
+          pipeline or image downscaling would be required.
+    \item \textbf{Calibration:} The area thresholds and morphological kernel
+          sizes are calibrated for the specific seed type and camera setup used
+          here. Deployment on a different seed or camera requires recalibration.
+    \item \textbf{Lighting control:} The pipeline's robustness can be greatly
+          improved by controlling the imaging environment (telecentric lens,
+          diffuse back-lit tray), reducing the need for adaptive thresholding.
+\end{itemize}
+
+\newpage
+
+% ============================================================
+\section{Conclusion}
+% ============================================================
+
+This report presented a six-stage classical image processing pipeline for
+automated seed counting, evaluated through a structured ablation study. The
+key findings are:
+
+\begin{enumerate}
+    \item \textbf{Adaptive thresholding} is the single most important
+          algorithmic choice. Replacing it with Otsu reduces accuracy by
+          25 percentage points on the 20-image sample.
+    \item \textbf{Morphological closing} is indispensable. Removing it
+          reduces accuracy to 0\% by creating holey masks that prevent
+          watershed from finding meaningful markers.
+    \item \textbf{Watershed} adds 20 percentage points over CCA alone,
+          demonstrating the value of a touching-seed separation step.
+    \item \textbf{Blob detection and DBSCAN segmentation} underperform
+          the baseline for this dataset, confirming that adaptive thresholding
+          on a CLAHE-enhanced image is the most effective foreground estimation
+          strategy with classical methods.
+    \item \textbf{High-density images remain the core unsolved challenge.}
+          All classical variants fail on images with $>70$ seeds due to blob
+          merging, with errors exceeding 80\% on the densest images.
+
+\end{enumerate}
+
+Future work should focus on density-adaptive watershed parameters as an
+immediate improvement and on shape-aware object fitting as a longer-term 
+solution that generalises across density levels without parameter re-tuning.
+
+\end{document}

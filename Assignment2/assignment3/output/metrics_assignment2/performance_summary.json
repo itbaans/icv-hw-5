@@ -1,0 +1,10 @@
+//Assignment2 Clustering//
+{
+  "total_images": 141,
+  "evaluated_images": 141,
+  "mae": 39.0426,
+  "rmse": 59.8168,
+  "num_failure_cases": 104,
+  "accuracy_within_threshold_pct": 26.24,
+  "threshold_pct_used": 10.0
+}

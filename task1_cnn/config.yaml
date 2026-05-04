@@ -1,0 +1,25 @@
+# Task 1 Configuration
+
+seed: 42
+
+data:
+  # Paths can be updated to point to /kaggle/input/ if running on Kaggle
+  image_dir: "../Assignment2/output/preprocessed_images/filtered/"
+  labels_path: "../Assignment2/output/segmentation/labeled_components.pkl"
+  image_size: [128, 128]
+  batch_size: 32
+  validation_split: 0.2
+
+training:
+  epochs: 30
+  early_stopping_patience: 5
+  learning_rate: 0.001
+  optimizer: "adam"  # 'adam' or 'sgd'
+  momentum: 0.9      # Used if optimizer is sgd
+  
+model_a:
+  filters: [32, 64, 128]
+
+model_b:
+  dropout_rate: 0.3
+  weight_decay: 1e-4
