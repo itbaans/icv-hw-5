@@ -127,7 +127,7 @@ def main():
         
     if args.kaggle:
         # Override paths for Kaggle
-        config['data']['image_dir'] = '/kaggle/input/agrivision-assignment2/output/preprocessed_images/filtered/'
+        config['data']['image_dir'] = '/kaggle/input/datasets/abdullahahmedani/seeds-data/filtered'
         
     if args.test_run:
         config['training']['epochs'] = 1

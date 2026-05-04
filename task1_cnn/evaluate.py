@@ -114,7 +114,7 @@ def main():
         
     image_dir = config['data']['image_dir']
     if args.kaggle:
-        image_dir = '/kaggle/input/agrivision-assignment2/output/preprocessed_images/filtered/'
+        image_dir = '/kaggle/input/datasets/abdullahahmedani/seeds-data/filtered'
         
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print(f"Using device: {device}")
