@@ -79,8 +79,8 @@ def train_model(model, train_loader, val_loader, criterion, optimizer, config, d
         else:
             epochs_no_improve += 1
             if epochs_no_improve >= patience:
-                print("Early stopping triggered.")
-                break
+                print(f"No improvement for {epochs_no_improve} epochs (Early stopping disabled).")
+                # break
 
     # Save metrics to CSV
     df = pd.DataFrame({
