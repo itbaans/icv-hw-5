@@ -47,7 +47,7 @@ class EvalDataset(torch.utils.data.Dataset):
         if self.transform:
             image = self.transform(image)
             
-        label = torch.tensor(label, dtype=torch.long)
+        label = torch.tensor([label], dtype=torch.float32)
         return image, label, img_name
 
 def evaluate_model(model, dataloader, device):
@@ -58,13 +58,13 @@ def evaluate_model(model, dataloader, device):
         for inputs, labels, filenames in tqdm(dataloader, desc="Evaluating"):
             inputs = inputs.to(device)
             outputs = model(inputs)
-            _, predicted = torch.max(outputs.data, 1)
+            predicted = outputs.data.squeeze(1).round() # Round continuous prediction to nearest integer
             
             for i in range(len(filenames)):
                 records.append({
                     "filename": filenames[i],
-                    "prediction": predicted[i].item(),
-                    "ground_truth": labels[i].item()
+                    "prediction": int(predicted[i].item()),
+                    "ground_truth": int(labels[i].item())
                 })
     return records
 
@@ -137,13 +137,13 @@ def main():
     os.makedirs('cnn_outputs', exist_ok=True)
     
     # Load Models
-    model_a = ModelA(num_classes=150).to(device)
+    model_a = ModelA().to(device)
     if os.path.exists('cnn_outputs/model_a.pth'):
         model_a.load_state_dict(torch.load('cnn_outputs/model_a.pth', map_location=device, weights_only=True))
     else:
         print("Warning: model_a.pth not found. Evaluating randomly initialized model.")
         
-    model_b = ModelB(num_classes=150, dropout_rate=config['model_b']['dropout_rate']).to(device)
+    model_b = ModelB(dropout_rate=config['model_b']['dropout_rate']).to(device)
     if os.path.exists('cnn_outputs/model_b.pth'):
         model_b.load_state_dict(torch.load('cnn_outputs/model_b.pth', map_location=device, weights_only=True))
     else:

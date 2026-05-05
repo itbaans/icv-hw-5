@@ -11,7 +11,7 @@ class ModelA(nn.Module):
     Dense -> Softmax
     Total parameters <= 1.5M
     """
-    def __init__(self, num_classes=150):
+    def __init__(self):
         super(ModelA, self).__init__()
         # Input shape: (3, 128, 128)
         self.conv1 = nn.Conv2d(3, 32, kernel_size=3, padding=1)
@@ -27,7 +27,7 @@ class ModelA(nn.Module):
         
         # Global Average Pooling will reduce (128, H, W) to (128, 1, 1) -> 128
         self.gap = nn.AdaptiveAvgPool2d((1, 1))
-        self.fc = nn.Linear(128, num_classes)
+        self.fc = nn.Linear(128, 1)
         
     def forward(self, x):
         x = self.pool(F.relu(self.bn1(self.conv1(x))))
@@ -67,7 +67,7 @@ class ModelB(nn.Module):
     Model B - Deeper/Regularized CNN
     At least 4 conv blocks with dropout (0.2-0.5), L2 weight decay, optional residual connection.
     """
-    def __init__(self, num_classes=150, dropout_rate=0.3):
+    def __init__(self, dropout_rate=0.3):
         super(ModelB, self).__init__()
         self.in_channels = 32
         
@@ -83,7 +83,7 @@ class ModelB(nn.Module):
         
         self.gap = nn.AdaptiveAvgPool2d((1, 1))
         self.dropout = nn.Dropout(dropout_rate)
-        self.fc = nn.Linear(256, num_classes)
+        self.fc = nn.Linear(256, 1)
         
     def _make_layer(self, out_channels, stride):
         strides = [stride]

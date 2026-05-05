@@ -35,8 +35,8 @@ class SeedDataset(Dataset):
         if self.transform:
             image = self.transform(image)
             
-        # Convert label to tensor (count of seeds)
-        label = torch.tensor(label, dtype=torch.long)
+        # Convert label to tensor (count of seeds, regression shape [1])
+        label = torch.tensor([label], dtype=torch.float32)
         
         return image, label
 

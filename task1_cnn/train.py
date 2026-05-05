@@ -18,12 +18,12 @@ def train_model(model, train_loader, val_loader, criterion, optimizer, config, d
     epochs_no_improve = 0
     
     train_losses, val_losses = [], []
-    train_accs, val_accs = [], []
+    train_maes, val_maes = [], []
     
     for epoch in range(epochs):
         model.train()
         running_loss = 0.0
-        correct = 0
+        total_mae = 0.0
         total = 0
         
         for inputs, labels in tqdm(train_loader, desc=f"{model_name} Epoch {epoch+1}/{epochs}"):
@@ -36,18 +36,20 @@ def train_model(model, train_loader, val_loader, criterion, optimizer, config, d
             optimizer.step()
             
             running_loss += loss.item() * inputs.size(0)
-            _, predicted = torch.max(outputs.data, 1)
+            
+            # Regression MAE
+            mae = torch.abs(outputs.data - labels).sum().item()
+            total_mae += mae
             total += labels.size(0)
-            correct += (predicted == labels).sum().item()
             
         train_loss = running_loss / len(train_loader.dataset)
-        train_acc = correct / total
+        train_mae = total_mae / total
         
         # Validation
         model.eval()
         val_loss = 0.0
-        correct = 0
-        total = 0
+        total_mae_val = 0.0
+        total_val = 0
         
         with torch.no_grad():
             for inputs, labels in val_loader:
@@ -56,19 +58,21 @@ def train_model(model, train_loader, val_loader, criterion, optimizer, config, d
                 loss = criterion(outputs, labels)
                 
                 val_loss += loss.item() * inputs.size(0)
-                _, predicted = torch.max(outputs.data, 1)
-                total += labels.size(0)
-                correct += (predicted == labels).sum().item()
+                
+                # Regression MAE
+                mae = torch.abs(outputs.data - labels).sum().item()
+                total_mae_val += mae
+                total_val += labels.size(0)
                 
         val_loss = val_loss / len(val_loader.dataset)
-        val_acc = correct / total
+        val_mae = total_mae_val / total_val
         
         train_losses.append(train_loss)
         val_losses.append(val_loss)
-        train_accs.append(train_acc)
-        val_accs.append(val_acc)
+        train_maes.append(train_mae)
+        val_maes.append(val_mae)
         
-        print(f"Train Loss: {train_loss:.4f}, Train Acc: {train_acc:.4f} | Val Loss: {val_loss:.4f}, Val Acc: {val_acc:.4f}")
+        print(f"Train Loss: {train_loss:.4f}, Train MAE: {train_mae:.4f} | Val Loss: {val_loss:.4f}, Val MAE: {val_mae:.4f}")
         
         # Early Stopping
         if val_loss < best_val_loss:
@@ -87,8 +91,8 @@ def train_model(model, train_loader, val_loader, criterion, optimizer, config, d
         'epoch': range(1, len(train_losses) + 1),
         'train_loss': train_losses,
         'val_loss': val_losses,
-        'train_acc': train_accs,
-        'val_acc': val_accs
+        'train_mae': train_maes,
+        'val_mae': val_maes
     })
     df.to_csv(f'cnn_outputs/{model_name}_metrics.csv', index=False)
     
@@ -97,24 +101,24 @@ def train_model(model, train_loader, val_loader, criterion, optimizer, config, d
     plt.plot(df['epoch'], df['train_loss'], label='Train Loss')
     plt.plot(df['epoch'], df['val_loss'], label='Val Loss')
     plt.xlabel('Epoch')
-    plt.ylabel('Loss')
+    plt.ylabel('Loss (MSE)')
     plt.title(f'{model_name} Loss Curve')
     plt.legend()
     plt.savefig(f'cnn_outputs/{model_name}_loss.png')
     plt.close()
     
-    # Plot accuracy
+    # Plot MAE
     plt.figure()
-    plt.plot(df['epoch'], df['train_acc'], label='Train Acc')
-    plt.plot(df['epoch'], df['val_acc'], label='Val Acc')
+    plt.plot(df['epoch'], df['train_mae'], label='Train MAE')
+    plt.plot(df['epoch'], df['val_mae'], label='Val MAE')
     plt.xlabel('Epoch')
-    plt.ylabel('Accuracy')
-    plt.title(f'{model_name} Accuracy Curve')
+    plt.ylabel('Mean Absolute Error (Seeds)')
+    plt.title(f'{model_name} MAE Curve')
     plt.legend()
-    plt.savefig(f'cnn_outputs/{model_name}_accuracy.png')
+    plt.savefig(f'cnn_outputs/{model_name}_mae.png')
     plt.close()
 
-    return train_losses, val_losses, train_accs, val_accs
+    return train_losses, val_losses, train_maes, val_maes
 
 def main():
     parser = argparse.ArgumentParser(description="Train CNN Models for Seed Counting")
@@ -150,8 +154,8 @@ def main():
     
     # --- Train Model A ---
     print("\n--- Training Model A ---")
-    model_a = ModelA(num_classes=150).to(device)
-    criterion = nn.CrossEntropyLoss()
+    model_a = ModelA().to(device)
+    criterion = nn.MSELoss()
     
     if config['training']['optimizer'] == 'adam':
         optimizer_a = optim.Adam(model_a.parameters(), lr=config['training']['learning_rate'])
@@ -162,7 +166,7 @@ def main():
     
     # --- Train Model B ---
     print("\n--- Training Model B ---")
-    model_b = ModelB(num_classes=150, dropout_rate=config['model_b']['dropout_rate']).to(device)
+    model_b = ModelB(dropout_rate=config['model_b']['dropout_rate']).to(device)
     
     # Use Adam with weight decay (L2) for Model B
     optimizer_b = optim.Adam(model_b.parameters(), lr=config['training']['learning_rate'], weight_decay=float(config['model_b']['weight_decay']))
