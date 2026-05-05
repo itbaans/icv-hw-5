@@ -20,7 +20,7 @@ except ImportError:
     print("Could not import generate_performance_summary from Assignment2.")
     generate_performance_summary = None
 
-from models import ModelA, ModelB
+from models import ModelA, ModelB, AblationModel
 
 class EvalDataset(torch.utils.data.Dataset):
     def __init__(self, image_dir, transform=None):
@@ -157,6 +157,18 @@ def main():
     print("\n--- Evaluating Model B ---")
     records_b = evaluate_model(model_b, dataloader, device)
     
+    # Evaluate Ablation Model Best
+    records_abl = None
+    if os.path.exists('cnn_outputs/best_ablation_model.pth'):
+        print("\n--- Evaluating Best Ablation Model ---")
+        checkpoint = torch.load('cnn_outputs/best_ablation_model.pth', map_location=device, weights_only=False) # allow loading dict
+        if 'params' in checkpoint:
+            ablation_model = AblationModel(**checkpoint['params']).to(device)
+            ablation_model.load_state_dict(checkpoint['state_dict'])
+            records_abl = evaluate_model(ablation_model, dataloader, device)
+        else:
+            print("Warning: best_ablation_model.pth found but no params dict inside. Skipping.")
+    
     # Calculate Metrics using Assignment 2 evaluate.py logic
     failure_cases_path = '../Assignment2/output/metrics/failure_cases.json'
     
@@ -199,6 +211,17 @@ def main():
             }
         ])
         
+        if records_abl:
+            summary_abl = generate_performance_summary(records_abl, output_path=None)
+            fixed_abl = check_failure_cases(records_abl, failure_cases_path)
+            comparison_data.append({
+                "Method": "CNN Ablation Best",
+                "Accuracy": summary_abl.get("accuracy_within_threshold_pct", "N/A"),
+                "MAE": summary_abl.get("mae", "N/A"),
+                "RMSE": summary_abl.get("rmse", "N/A"),
+                "Failure Cases Fixed": fixed_abl
+            })
+        
         df_comp = pd.DataFrame(comparison_data)
         df_comp.to_csv('cnn_outputs/comparison_table.csv', index=False)
         print("\nSaved comparison_table.csv")
@@ -210,6 +233,8 @@ def main():
     # Plotting
     plot_confusion_matrix(records_a, "Model_A", "cnn_outputs")
     plot_confusion_matrix(records_b, "Model_B", "cnn_outputs")
+    if records_abl:
+        plot_confusion_matrix(records_abl, "Ablation_Best", "cnn_outputs")
     print("\nEvaluation complete. Plots and CSVs saved to cnn_outputs/.")
 
 if __name__ == "__main__":

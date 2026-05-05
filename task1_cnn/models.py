@@ -105,3 +105,37 @@ class ModelB(nn.Module):
         x = self.dropout(x)
         x = self.fc(x)
         return x
+
+class AblationModel(nn.Module):
+    """
+    Dynamic CNN for ablation study.
+    Allows changing number of layers, filters per layer, and kernel size.
+    """
+    def __init__(self, filters=[32, 64, 128], kernel_size=3, dropout_rate=0.3):
+        super(AblationModel, self).__init__()
+        
+        layers = []
+        in_channels = 3
+        padding = kernel_size // 2
+        
+        for out_channels in filters:
+            layers.append(nn.Conv2d(in_channels, out_channels, kernel_size=kernel_size, padding=padding))
+            layers.append(nn.BatchNorm2d(out_channels))
+            layers.append(nn.ReLU(inplace=True))
+            layers.append(nn.MaxPool2d(2, 2))
+            in_channels = out_channels
+            
+        self.features = nn.Sequential(*layers)
+        self.gap = nn.AdaptiveAvgPool2d((1, 1))
+        self.dropout = nn.Dropout(dropout_rate)
+        
+        # Output is regression (1 continuous value)
+        self.fc = nn.Linear(filters[-1], 1)
+        
+    def forward(self, x):
+        x = self.features(x)
+        x = self.gap(x)
+        x = torch.flatten(x, 1)
+        x = self.dropout(x)
+        x = self.fc(x)
+        return x
