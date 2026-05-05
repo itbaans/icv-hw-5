@@ -42,11 +42,19 @@ def main():
     # Ablation Grid
     # We will test different layer sizes, kernel sizes, dropout, and learning rates
     grid = {
-        'filters': [[16, 32, 64], [32, 64, 128], [64, 128, 256]],
+        'filters': [
+            [16, 32, 64],           # 3 layers (Shallow)
+            [32, 64, 128],          # 3 layers (Baseline)
+            [16, 32, 64, 128],      # 4 layers (Deep)
+            [32, 64, 128, 256]      # 4 layers (Very Deep)
+        ],
         'kernel_size': [3, 5, 7],
         'dropout_rate': [0.2, 0.4],
         'learning_rate': [0.001, 0.0001],
-        'optimizer': ['adam', 'sgd']
+        'optimizer': ['adam', 'sgd'],
+        'use_residual': [True, False],
+        'activation': ['relu', 'leaky_relu'],
+        'weight_decay': [0.0, 1e-4]
     }
     
     if args.test_run:
@@ -54,7 +62,10 @@ def main():
         grid['kernel_size'] = [3]
         grid['dropout_rate'] = [0.2]
         grid['learning_rate'] = [0.001]
-        grid['optimizer'] = ['adam', 'sgd'] # Just 2 combinations
+        grid['optimizer'] = ['adam']
+        grid['use_residual'] = [True, False]
+        grid['activation'] = ['relu']
+        grid['weight_decay'] = [0.0]
 
     keys, values = zip(*grid.items())
     combinations = [dict(zip(keys, v)) for v in itertools.product(*values)]
@@ -70,14 +81,16 @@ def main():
         model = AblationModel(
             filters=params['filters'], 
             kernel_size=params['kernel_size'], 
-            dropout_rate=params['dropout_rate']
+            dropout_rate=params['dropout_rate'],
+            use_residual=params['use_residual'],
+            activation=params['activation']
         ).to(device)
         
         criterion = nn.MSELoss()
         if params['optimizer'] == 'adam':
-            optimizer = optim.Adam(model.parameters(), lr=params['learning_rate'])
+            optimizer = optim.Adam(model.parameters(), lr=params['learning_rate'], weight_decay=params['weight_decay'])
         else:
-            optimizer = optim.SGD(model.parameters(), lr=params['learning_rate'], momentum=0.9)
+            optimizer = optim.SGD(model.parameters(), lr=params['learning_rate'], momentum=0.9, weight_decay=params['weight_decay'])
         
         best_val_mae_for_run = float('inf')
         best_epoch = 0
@@ -145,6 +158,9 @@ def main():
             'Dropout Rate': params['dropout_rate'],
             'Learning Rate': params['learning_rate'],
             'Optimizer': params['optimizer'],
+            'Residual': params['use_residual'],
+            'Activation': params['activation'],
+            'Weight Decay': params['weight_decay'],
             'Best Epoch': best_epoch,
             'Final Train MAE': round(final_train_mae, 4),
             'Best Val MAE': round(best_val_mae_for_run, 4),

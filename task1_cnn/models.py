@@ -106,23 +106,64 @@ class ModelB(nn.Module):
         x = self.fc(x)
         return x
 
+def get_activation(name):
+    if name == 'leaky_relu':
+        return nn.LeakyReLU(0.1, inplace=True)
+    return nn.ReLU(inplace=True)
+
+class SimpleBlock(nn.Module):
+    def __init__(self, in_channels, out_channels, kernel_size=3, activation='relu'):
+        super(SimpleBlock, self).__init__()
+        padding = kernel_size // 2
+        self.conv = nn.Conv2d(in_channels, out_channels, kernel_size=kernel_size, padding=padding)
+        self.bn = nn.BatchNorm2d(out_channels)
+        self.relu = get_activation(activation)
+        self.pool = nn.MaxPool2d(2, 2)
+        
+    def forward(self, x):
+        return self.pool(self.relu(self.bn(self.conv(x))))
+
+class ResidualBlockAblation(nn.Module):
+    def __init__(self, in_channels, out_channels, kernel_size=3, activation='relu'):
+        super(ResidualBlockAblation, self).__init__()
+        padding = kernel_size // 2
+        self.conv1 = nn.Conv2d(in_channels, out_channels, kernel_size=kernel_size, padding=padding, bias=False)
+        self.bn1 = nn.BatchNorm2d(out_channels)
+        self.conv2 = nn.Conv2d(out_channels, out_channels, kernel_size=kernel_size, padding=padding, bias=False)
+        self.bn2 = nn.BatchNorm2d(out_channels)
+        self.pool = nn.MaxPool2d(2, 2)
+        self.act = get_activation(activation)
+        
+        self.shortcut = nn.Sequential()
+        if in_channels != out_channels:
+            self.shortcut = nn.Sequential(
+                nn.Conv2d(in_channels, out_channels, kernel_size=1, bias=False),
+                nn.BatchNorm2d(out_channels)
+            )
+            
+    def forward(self, x):
+        out = self.act(self.bn1(self.conv1(x)))
+        out = self.bn2(self.conv2(out))
+        out += self.shortcut(x)
+        out = self.act(out)
+        return self.pool(out)
+
 class AblationModel(nn.Module):
     """
     Dynamic CNN for ablation study.
-    Allows changing number of layers, filters per layer, and kernel size.
+    Allows changing number of layers, filters per layer, kernel size, and residual connections.
     """
-    def __init__(self, filters=[32, 64, 128], kernel_size=3, dropout_rate=0.3):
+    def __init__(self, filters=[32, 64, 128], kernel_size=3, dropout_rate=0.3, use_residual=False, activation='relu'):
         super(AblationModel, self).__init__()
         
         layers = []
         in_channels = 3
-        padding = kernel_size // 2
         
         for out_channels in filters:
-            layers.append(nn.Conv2d(in_channels, out_channels, kernel_size=kernel_size, padding=padding))
-            layers.append(nn.BatchNorm2d(out_channels))
-            layers.append(nn.ReLU(inplace=True))
-            layers.append(nn.MaxPool2d(2, 2))
+            if use_residual:
+                layers.append(ResidualBlockAblation(in_channels, out_channels, kernel_size, activation))
+            else:
+                layers.append(SimpleBlock(in_channels, out_channels, kernel_size, activation))
             in_channels = out_channels
             
         self.features = nn.Sequential(*layers)
