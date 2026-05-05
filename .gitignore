@@ -36,6 +36,9 @@ task2_nst_video/style/
 *.avi
 *.mov
 
+# Reference implementation (third-party, not submitted)
+reference_implementation_nst/
+
 # IDEs
 .idea/
 .vscode/

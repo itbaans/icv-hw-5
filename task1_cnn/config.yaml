@@ -11,7 +11,7 @@ data:
   validation_split: 0.2
 
 training:
-  epochs: 30
+  epochs: 100
   early_stopping_patience: 5
   learning_rate: 0.001
   optimizer: "adam"  # 'adam' or 'sgd'

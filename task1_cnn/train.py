@@ -124,7 +124,7 @@ def main():
     parser = argparse.ArgumentParser(description="Train CNN Models for Seed Counting")
     parser.add_argument('--kaggle', action='store_true', help='Use Kaggle dataset paths')
     parser.add_argument('--test-run', action='store_true', help='Run quickly on a few images for testing')
-    args = parser.parse_args()
+    args     = parser.parse_args()
 
     with open('config.yaml', 'r') as f:
         config = yaml.safe_load(f)
