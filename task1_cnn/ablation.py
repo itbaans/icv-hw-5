@@ -16,8 +16,10 @@ Ablation groups
 2  Residual connections — True vs False (2 configs, ~14min)
 3  Dropout              — 0.0 / 0.2 / 0.3 / 0.5 (4 configs, ~28min)
 4  Kernel size          — 3 / 5 / 7 (3 configs, ~21min)
-5  Model A final        — official assignment spec, no residual (1 config)
-6  Model B final        — deeper, regularised, residual (2 configs)
+5  Weight decay         — 0 / 1e-5 / 1e-4 / 1e-3 (4 configs, ~28min)
+6  Activation function  — relu / leaky_relu (2 configs, ~14min)
+7  Model A final        — official assignment spec, no residual (1 config)
+8  Model B final        — deeper, regularised, residual (2 configs)
 
 Usage
 -----
@@ -140,11 +142,60 @@ ABLATION_GROUPS = {
     },
 
     # ------------------------------------------------------------------
-    # Group 6: Model B — deeper, regularised, residual
-    #   Uses best settings from groups 1-4; must beat Model A.
-    #   At least 4 conv blocks + dropout (0.2-0.5) + L2 weight decay.
+    # Group 5: Weight decay (L2 regularisation)
+    #   Isolates: how much L2 penalty helps on top of dropout?
+    #   Fix: SGD, k=3, [32,64,128], dr=0.3, relu, residual=True
+    # ------------------------------------------------------------------
+    5: {
+        "description": "Weight decay ablation",
+        "fixed": dict(filters=[32, 64, 128], kernel_size=3, dropout_rate=0.3,
+                      optimizer="sgd", use_residual=True, activation="relu",
+                      learning_rate=0.001),
+        "vary": [
+            {"weight_decay": 0.0},
+            {"weight_decay": 1e-5},
+            {"weight_decay": 1e-4},
+            {"weight_decay": 1e-3},
+        ],
+    },
+
+    # ------------------------------------------------------------------
+    # Group 6: Activation function
+    #   Isolates: does leaky ReLU help vs standard ReLU?
+    #   Fix: SGD, k=3, [32,64,128], dr=0.3, residual=True, best wd
     # ------------------------------------------------------------------
     6: {
+        "description": "Activation function ablation",
+        "fixed": dict(filters=[32, 64, 128], kernel_size=3, dropout_rate=0.3,
+                      optimizer="sgd", use_residual=True,
+                      learning_rate=0.001, weight_decay=1e-4),
+        "vary": [
+            {"activation": "relu"},
+            {"activation": "leaky_relu"},
+        ],
+    },
+
+    # ------------------------------------------------------------------
+    # Group 7: Model A — official assignment baseline
+    #   Exactly spec: 3 conv blocks [32,64,128], k=3, no residual, SGD
+    #   (No dropout on Model A — keep it a true baseline)
+    # ------------------------------------------------------------------
+    7: {
+        "description": "Model A — official baseline",
+        "fixed": dict(kernel_size=3, dropout_rate=0.0, optimizer="sgd",
+                      use_residual=False, activation="relu",
+                      learning_rate=0.001, weight_decay=0.0),
+        "vary": [
+            {"filters": [32, 64, 128]},
+        ],
+    },
+
+    # ------------------------------------------------------------------
+    # Group 8: Model B — deeper, regularised, residual
+    #   Uses best settings from groups 1-6; must beat Model A.
+    #   At least 4 conv blocks + dropout (0.2-0.5) + L2 weight decay.
+    # ------------------------------------------------------------------
+    8: {
         "description": "Model B — deeper / regularised",
         "fixed": dict(kernel_size=3, dropout_rate=0.3, optimizer="sgd",
                       use_residual=True, activation="relu",
@@ -271,7 +322,7 @@ def main():
     parser.add_argument("--test-run", action="store_true")
     parser.add_argument(
         "--groups",
-        default="0,1,2,3,4,5,6",
+        default="0,1,2,3,4,5,6,7,8",
         help="Comma-separated group IDs to run (e.g. '1,2,5,6'). Default: all.",
     )
     args = parser.parse_args()
