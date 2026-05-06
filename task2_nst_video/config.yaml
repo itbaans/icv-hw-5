@@ -54,8 +54,8 @@ task2:
     # Subsampling strategy: random shuffle with fixed seed, then take first
     # n_train / n_val / n_test pairs. This ensures reproducibility.
     data:
-      clip_root:  "data/clip_img/"    # path to AISegment clip_img/ folder
-      matte_root: "data/matting/"     # path to AISegment matting/  folder
+      clip_root:  "/kaggle/input/datasets/laurentmih/aisegmentcom-matting-human-datasets/clip_img"    # path to AISegment clip_img/ folder
+      matte_root: "/kaggle/input/datasets/laurentmih/aisegmentcom-matting-human-datasets/matting"     # path to AISegment matting/  folder
       img_size:   [256, 256]          # resize all images to (H, W)
       n_train:    5000
       n_val:      500

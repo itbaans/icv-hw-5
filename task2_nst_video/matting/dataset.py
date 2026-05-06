@@ -115,11 +115,26 @@ class AISegmentDataset(Dataset):
         img_path, matte_path = self.pairs[idx]
 
         # --- load ---
-        img   = cv2.imread(img_path,   cv2.IMREAD_COLOR)   # BGR uint8
-        matte = cv2.imread(matte_path, cv2.IMREAD_GRAYSCALE)  # uint8 [0,255]
+        img       = cv2.imread(img_path,   cv2.IMREAD_COLOR)      # BGR  uint8  H×W×3
+        matte_raw = cv2.imread(matte_path, cv2.IMREAD_UNCHANGED)  # BGRA uint8  H×W×4
 
-        if img is None or matte is None:
+        if img is None or matte_raw is None:
             raise FileNotFoundError(f"Could not read:\n  {img_path}\n  {matte_path}")
+
+        # AISegment mattes are RGBA .png files.
+        # The actual alpha matte is channel index 3 (A channel).
+        # DO NOT use IMREAD_GRAYSCALE — that gives the luminance blend of RGB,
+        # not the matte. Per the dataset author's README:
+        #   in_image = cv2.imread(path, cv2.IMREAD_UNCHANGED)
+        #   alpha    = in_image[:, :, 3]
+        if matte_raw.ndim == 2:
+            # Fallback: already grayscale (some files in the dataset are plain masks)
+            matte = matte_raw
+        elif matte_raw.shape[2] == 4:
+            matte = matte_raw[:, :, 3]   # extract alpha channel
+        else:
+            # 3-channel PNG: treat luminance as matte (shouldn't happen normally)
+            matte = cv2.cvtColor(matte_raw, cv2.COLOR_BGR2GRAY)
 
         img   = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
