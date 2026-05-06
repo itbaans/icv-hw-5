@@ -169,7 +169,7 @@ def main():
     )
     optimizer = optim.Adam(model.parameters(), lr=tcfg["lr"], weight_decay=tcfg.get("weight_decay", 1e-4))
     scheduler = optim.lr_scheduler.ReduceLROnPlateau(
-        optimizer, mode="max", factor=0.5, patience=tcfg.get("lr_patience", 3), verbose=True
+        optimizer, mode="max", factor=0.5, patience=tcfg.get("lr_patience", 3)
     )
 
     use_amp = tcfg.get("amp", False) and torch.cuda.is_available()
