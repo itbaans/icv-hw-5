@@ -13,7 +13,7 @@ task2:
   # --------------------------------------------------------------------------
   # Paths - fill these in once you add your video / style images
   # --------------------------------------------------------------------------
-  input_video: "input_video.mp4"           # your raw recording (unmodified)
+  input_video: "temp-vid.mp4"           # your raw recording (unmodified)
   content_dir: "content/"                  # 5 frames extracted from the video
   style_dir:   "style/"                    # 3 public-domain paintings
   output_dir:  "outputs/"
@@ -30,7 +30,7 @@ task2:
 
   # The single style image used during video_pipeline.py
   # (choose your best-looking style for the final video)
-  style_image: "style/style_1.jpg"
+  style_image: "style/field.jpg"
 
   # --------------------------------------------------------------------------
   # Human Matting Model

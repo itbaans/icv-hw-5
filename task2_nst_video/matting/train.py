@@ -29,6 +29,9 @@ import numpy as np
 import torch
 import torch.optim as optim
 import yaml
+import matplotlib
+matplotlib.use("Agg")           # non-interactive backend (safe on Kaggle)
+import matplotlib.pyplot as plt
 from tqdm import tqdm
 
 # ── make sure the task2 root is importable ───────────────────────────────────
@@ -248,6 +251,72 @@ def main():
     ts_loss, ts_iou, ts_mad = evaluate(model, loaders["test"], criterion, device)
     print(f"TEST  | loss {ts_loss:.4f}  IoU {ts_iou:.4f}  MAD {ts_mad:.4f}")
     print(f"Best val IoU: {best_iou:.4f}  (target >= 0.85)")
+
+    # ── auto-generate training plots ──────────────────────────────────────────
+    _plot_training_curves(log_path, out_dir)
+
+
+def _plot_training_curves(log_path: str, out_dir: str):
+    """Read matting_train_log.csv and save four report-ready plots."""
+    import csv as _csv
+
+    epochs, tr_loss, vl_loss = [], [], []
+    tr_iou,  vl_iou          = [], []
+    tr_mad,  vl_mad          = [], []
+    lrs                      = []
+
+    with open(log_path) as f:
+        reader = _csv.DictReader(f)
+        for row in reader:
+            epochs.append(int(row["epoch"]))
+            tr_loss.append(float(row["train_loss"]))
+            vl_loss.append(float(row["val_loss"]))
+            tr_iou.append(float(row["train_iou"]))
+            vl_iou.append(float(row["val_iou"]))
+            tr_mad.append(float(row["train_mad"]))
+            vl_mad.append(float(row["val_mad"]))
+            lrs.append(float(row["lr"]))
+
+    fig, axes = plt.subplots(2, 2, figsize=(12, 8))
+    fig.suptitle("Matting Model — Training Curves", fontsize=14, fontweight="bold")
+
+    # Loss
+    ax = axes[0][0]
+    ax.plot(epochs, tr_loss, label="Train", linewidth=1.5)
+    ax.plot(epochs, vl_loss, label="Val",   linewidth=1.5, linestyle="--")
+    ax.set_title("Combined Loss (L1 + Dice)")
+    ax.set_xlabel("Epoch"); ax.set_ylabel("Loss")
+    ax.legend(); ax.grid(alpha=0.3)
+
+    # IoU
+    ax = axes[0][1]
+    ax.plot(epochs, tr_iou, label="Train", linewidth=1.5)
+    ax.plot(epochs, vl_iou, label="Val",   linewidth=1.5, linestyle="--")
+    ax.axhline(0.85, color="red", linestyle=":", linewidth=1, label="Target IoU 0.85")
+    ax.set_title("IoU")
+    ax.set_xlabel("Epoch"); ax.set_ylabel("IoU")
+    ax.set_ylim(0, 1); ax.legend(); ax.grid(alpha=0.3)
+
+    # MAD
+    ax = axes[1][0]
+    ax.plot(epochs, tr_mad, label="Train", linewidth=1.5)
+    ax.plot(epochs, vl_mad, label="Val",   linewidth=1.5, linestyle="--")
+    ax.set_title("Mean Absolute Difference (MAD)")
+    ax.set_xlabel("Epoch"); ax.set_ylabel("MAD")
+    ax.legend(); ax.grid(alpha=0.3)
+
+    # Learning rate
+    ax = axes[1][1]
+    ax.plot(epochs, lrs, color="orange", linewidth=1.5)
+    ax.set_title("Learning Rate Schedule")
+    ax.set_xlabel("Epoch"); ax.set_ylabel("LR")
+    ax.set_yscale("log"); ax.grid(alpha=0.3)
+
+    plt.tight_layout()
+    plot_path = os.path.join(out_dir, "matting_training_curves.png")
+    plt.savefig(plot_path, dpi=150, bbox_inches="tight")
+    plt.close()
+    print(f"  ✓ Saved training curves → {plot_path}")
 
 
 if __name__ == "__main__":
