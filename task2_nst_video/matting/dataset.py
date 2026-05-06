@@ -36,22 +36,56 @@ import torchvision.transforms as T
 # Helpers
 # ---------------------------------------------------------------------------
 
-def _collect_pairs(clip_root: Path, matte_root: Path):
-    """Walk clip_root and find the matching matte for every image."""
+def _collect_pairs(clip_root: Path, matte_root: Path, max_pairs: int = None):
+    """
+    Walk clip_root with os.walk and find the matching matte for every image.
+
+    Uses os.walk instead of rglob for two reasons:
+    1. Early exit: stops as soon as max_pairs are collected (we only need 6000
+       out of 34k, so this avoids scanning the full Kaggle network filesystem).
+    2. Predictable order: os.walk is consistently faster than rglob on
+       network-mounted filesystems (Kaggle input datasets).
+
+    Naming convention (AISegment):
+      clip_img / XXXX / clip_YYYY  / image.jpg
+      matting  / XXXX / matting_YYYY / image.png
+    The subfolder swap: replace "clip_" with "matting_" in the 2nd path level.
+    """
     pairs = []
-    for img_path in sorted(clip_root.rglob("*.jpg")):
-        # Build the expected matte path: replace clip_root prefix with
-        # matte_root and change extension to .png
-        rel = img_path.relative_to(clip_root)
-        # AISegment naming: clip_img/XXXX/clip_YYYY/image.jpg
-        #                   matting/XXXX/matting_YYYY/image.png
-        parts = list(rel.parts)
+    clip_root  = str(clip_root)
+    matte_root = str(matte_root)
+    n_checked  = 0
+
+    for dirpath, _, filenames in os.walk(clip_root):
+        jpg_files = sorted(f for f in filenames if f.lower().endswith(".jpg"))
+        if not jpg_files:
+            continue
+
+        # Compute the matching matting subdirectory
+        rel_dir = os.path.relpath(dirpath, clip_root)   # e.g. 0000001/clip_00000000
+        parts   = rel_dir.split(os.sep)
         if len(parts) >= 2:
             parts[1] = parts[1].replace("clip_", "matting_")
-        matte_path = matte_root / Path(*parts).with_suffix(".png")
-        if matte_path.exists():
-            pairs.append((str(img_path), str(matte_path)))
+        matte_dir = os.path.join(matte_root, *parts)
+
+        for fname in jpg_files:
+            img_path   = os.path.join(dirpath, fname)
+            matte_path = os.path.join(matte_dir, os.path.splitext(fname)[0] + ".png")
+            n_checked += 1
+
+            if os.path.exists(matte_path):
+                pairs.append((img_path, matte_path))
+
+            if n_checked % 500 == 0:
+                print(f"  [dataset] scanned {n_checked} images, "
+                      f"found {len(pairs)} valid pairs …", flush=True)
+
+            if max_pairs and len(pairs) >= max_pairs:
+                print(f"  [dataset] reached {max_pairs} pairs — stopping early.", flush=True)
+                return pairs
+
     return pairs
+
 
 
 # ---------------------------------------------------------------------------
@@ -87,8 +121,11 @@ class AISegmentDataset(Dataset):
         self.split = split
         self.img_size = img_size  # (H, W)
 
-        # ---- collect & shuffle all pairs ----
-        all_pairs = _collect_pairs(Path(clip_root), Path(matte_root))
+        # ---- collect & shuffle all pairs (early-exit at what we need) ----
+        max_needed = n_train + n_val + n_test
+        print(f"  [dataset] collecting pairs (need {max_needed}, scanning early-exit) …", flush=True)
+        all_pairs = _collect_pairs(Path(clip_root), Path(matte_root), max_pairs=max_needed * 2)
+        # collect 2× what we need so the shuffle has enough variety to pick from
         rng = random.Random(seed)
         rng.shuffle(all_pairs)
 
