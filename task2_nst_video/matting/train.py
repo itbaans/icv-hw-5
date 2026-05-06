@@ -29,6 +29,7 @@ import numpy as np
 import torch
 import torch.optim as optim
 import yaml
+from tqdm import tqdm
 
 # ── make sure the task2 root is importable ───────────────────────────────────
 TASK2_ROOT = Path(__file__).resolve().parent.parent
@@ -57,12 +58,15 @@ def set_seed(seed: int):
 # Training
 # ---------------------------------------------------------------------------
 
-def train_one_epoch(model, loader, optimizer, criterion, device, scaler=None):
+def train_one_epoch(model, loader, optimizer, criterion, device, epoch, scaler=None):
     model.train()
-    metrics = RunningMetrics()
+    metrics   = RunningMetrics()
     total_loss = 0.0
+    n_samples  = 0
 
-    for imgs, mattes in loader:
+    pbar = tqdm(loader, desc=f"  Train E{epoch:02d}", leave=False,
+                dynamic_ncols=True, unit="batch")
+    for imgs, mattes in pbar:
         imgs   = imgs.to(device, non_blocking=True)
         mattes = mattes.to(device, non_blocking=True)
 
@@ -81,27 +85,40 @@ def train_one_epoch(model, loader, optimizer, criterion, device, scaler=None):
             loss.backward()
             optimizer.step()
 
-        total_loss += loss.item() * imgs.size(0)
+        b = imgs.size(0)
+        total_loss += loss.item() * b
+        n_samples  += b
         with torch.no_grad():
             metrics.update(preds.detach(), mattes)
+
+        pbar.set_postfix(loss=f"{total_loss/n_samples:.4f}",
+                         iou=f"{metrics.iou:.4f}",
+                         mad=f"{metrics.mad:.4f}")
 
     n = len(loader.dataset)
     return total_loss / n, metrics.iou, metrics.mad
 
 
 @torch.no_grad()
-def evaluate(model, loader, criterion, device):
+def evaluate(model, loader, criterion, device, epoch=0):
     model.eval()
-    metrics = RunningMetrics()
+    metrics    = RunningMetrics()
     total_loss = 0.0
+    n_samples  = 0
 
-    for imgs, mattes in loader:
+    pbar = tqdm(loader, desc=f"  Val   E{epoch:02d}", leave=False,
+                dynamic_ncols=True, unit="batch")
+    for imgs, mattes in pbar:
         imgs   = imgs.to(device, non_blocking=True)
         mattes = mattes.to(device, non_blocking=True)
         preds  = model(imgs)
         loss, _, _ = criterion(preds, mattes)
-        total_loss += loss.item() * imgs.size(0)
+        b = imgs.size(0)
+        total_loss += loss.item() * b
+        n_samples  += b
         metrics.update(preds, mattes)
+        pbar.set_postfix(loss=f"{total_loss/n_samples:.4f}",
+                         iou=f"{metrics.iou:.4f}")
 
     n = len(loader.dataset)
     return total_loss / n, metrics.iou, metrics.mad
@@ -189,10 +206,10 @@ def main():
 
         for epoch in range(1, tcfg["epochs"] + 1):
             tr_loss, tr_iou, tr_mad = train_one_epoch(
-                model, loaders["train"], optimizer, criterion, device, scaler
+                model, loaders["train"], optimizer, criterion, device, epoch, scaler
             )
             vl_loss, vl_iou, vl_mad = evaluate(
-                model, loaders["val"], criterion, device
+                model, loaders["val"], criterion, device, epoch
             )
             lr = optimizer.param_groups[0]["lr"]
             scheduler.step(vl_iou)
