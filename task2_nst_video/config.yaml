@@ -88,10 +88,10 @@ task2:
 
     # max_frames: cap how many frames are processed (useful when testing with
     # lbfgs which is slow). Set to 0 or remove to process all frames.
-    max_frames:     60             # ~2 sec at 30fps; good for L-BFGS testing
+    max_frames:     0             # ~2 sec at 30fps; good for L-BFGS testing
 
-    optimizer:      "adam"        # "adam" (~1s/frame) or "lbfgs" (~60s/frame)
-    iterations:     200            # L-BFGS steps per frame (100 is enough with
+    optimizer:      "lbfgs"        # "adam" (~1s/frame) or "lbfgs" (~60s/frame)
+    iterations:     100            # L-BFGS steps per frame (100 is enough with
                                    # temporal init; first frame uses 300 below)
     iterations_first: 300          # more steps for frame 0 (no temporal init)
     adam_lr:        10.0           # only used when optimizer = "adam"
