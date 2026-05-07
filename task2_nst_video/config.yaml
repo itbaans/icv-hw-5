@@ -13,7 +13,7 @@ task2:
   # --------------------------------------------------------------------------
   # Paths - fill these in once you add your video / style images
   # --------------------------------------------------------------------------
-  input_video: "temp-vid.mp4"           # your raw recording (unmodified)
+  input_video: "input_vid_1.mp4"           # your raw recording (unmodified)
   content_dir: "content/"                  # 5 frames extracted from the video
   style_dir:   "style/"                    # 3 public-domain paintings
   output_dir:  "outputs/"
@@ -25,12 +25,13 @@ task2:
   # Set this to one of your best stylised frames after running the pipeline.
   branded_poster_source: ""
 
-  # Style-weight sweep values for the β/α ablation (3 required)
-  style_weight_sweep: [1000.0, 100000.0, 10000000.0]
+  # Style-weight sweep values for the β/α ablation (3 required).
+  # These span low/medium/high relative to content_weight=100000.0
+  style_weight_sweep: [10000.0, 1000000.0, 100000000.0]
 
   # The single style image used during video_pipeline.py
   # (choose your best-looking style for the final video)
-  style_image: "style/field.jpg"
+  style_image: "style/new_style.jpg"
 
   # --------------------------------------------------------------------------
   # Human Matting Model
@@ -85,16 +86,26 @@ task2:
     height:         360            # resize content/style images to this height
                                    # (aspect ratio preserved for content)
 
-    optimizer:      "adam"         # "adam" (recommended for video) or "lbfgs" (better quality, very slow per-frame)
-    iterations:     200            # Adam steps per frame (500 for lbfgs single-image stylization)
+    # max_frames: cap how many frames are processed (useful when testing with
+    # lbfgs which is slow). Set to 0 or remove to process all frames.
+    max_frames:     60             # ~2 sec at 30fps; good for L-BFGS testing
+
+    optimizer:      "lbfgs"        # "adam" (~1s/frame) or "lbfgs" (~60s/frame)
+    iterations:     100            # L-BFGS steps per frame (100 is enough with
+                                   # temporal init; first frame uses 300 below)
+    iterations_first: 300          # more steps for frame 0 (no temporal init)
     adam_lr:        10.0           # only used when optimizer = "adam"
 
-    # Loss weights
-    # Defaults produce a good balance for portraiture.
-    # The video_pipeline uses these; visualize.py overrides style_weight for ablation.
-    content_weight: 1.0e5          # α  (content fidelity)
-    style_weight:   3.0e4          # β  (style strength)
-    tv_weight:      1.0            # total-variation regularisation
+    # Loss weights  (all plain floats — avoid YAML scientific notation which
+    # can parse as strings in some PyYAML versions and cause TypeErrors)
+    # β/α ratio = style_weight / content_weight
+    #   ratio ~  0.1  → barely stylised (content dominates)
+    #   ratio ~ 10    → moderate, balanced
+    #   ratio ~ 100   → strong stylisation  ← good default for video
+    #   ratio ~ 1000+ → abstract / melted
+    content_weight: 100000.0       # α  (content fidelity)
+    style_weight:   10000000.0     # β  (style strength)  β/α = 100
+    tv_weight:      1.0            # total-variation smoothness regulariser
 
     # Temporal consistency: when processing video frames, the stylised frame
     # t-1 is passed as `init_tensor` instead of the raw content frame.

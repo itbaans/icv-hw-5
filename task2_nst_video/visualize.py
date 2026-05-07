@@ -188,21 +188,22 @@ def _run_nst_with_custom_style_idxs(content_t, style_t, cfg):
 
     opt_img = content_t.clone().detach().requires_grad_(True)
 
-    cw = cfg.get("content_weight", 1e5)
-    sw = cfg.get("style_weight",   3e4)
-    tv = cfg.get("tv_weight",      1e0)
-    ni = cfg.get("iterations",     300)
+    cw = float(cfg.get("content_weight", 1e5))
+    sw = float(cfg.get("style_weight",   3e4))
+    tv = float(cfg.get("tv_weight",      1e0))
+    ni = int(cfg.get("iterations",       300))
 
-    opt = Adam([opt_img], lr=cfg.get("adam_lr", 1e1))
+    opt = Adam([opt_img], lr=float(cfg.get("adam_lr", 1e1)))
     for _ in range(ni):
-        opt.zero_grad()
-        feats   = vgg(opt_img)
-        c_loss  = F.mse_loss(feats[VGG19Features.CONTENT_IDX].squeeze(0), target_content)
-        s_loss  = sum(F.mse_loss(gram_matrix(feats[i]), target_style[k])
-                      for k, i in enumerate(override)) / max(len(override), 1)
-        tv_loss = total_variation(opt_img)
-        (cw * c_loss + sw * s_loss + tv * tv_loss).backward()
-        opt.step()
+        with torch.enable_grad():
+            opt.zero_grad()
+            feats   = vgg(opt_img)
+            c_loss  = F.mse_loss(feats[VGG19Features.CONTENT_IDX].squeeze(0), target_content)
+            s_loss  = sum(F.mse_loss(gram_matrix(feats[i]), target_style[k])
+                          for k, i in enumerate(override)) / float(max(len(override), 1))
+            tv_loss = total_variation(opt_img)
+            (cw * c_loss + sw * s_loss + tv * tv_loss).backward()
+            opt.step()
 
     return opt_img.detach()
 

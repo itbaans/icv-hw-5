@@ -223,13 +223,20 @@ def run_pipeline(cfg: dict):
 
     prev_stylised: torch.Tensor | None = None
     frame_idx = 0
+    max_frames = int(nst_cfg.get("max_frames", 0))  # 0 = process all
+    iter_default = int(nst_cfg.get("iterations",       200))
+    iter_first   = int(nst_cfg.get("iterations_first", iter_default))
 
     while True:
         ret, frame = cap.read()
         if not ret:
             break
 
-        print(f"  Frame {frame_idx + 1}/{n_frames}", end="\r")
+        if max_frames > 0 and frame_idx >= max_frames:
+            print(f"  max_frames={max_frames} reached — stopping early.")
+            break
+
+        print(f"  Frame {frame_idx + 1}/{min(n_frames, max_frames) if max_frames else n_frames}", end="\r")
 
         # ── resize frame to NST height ────────────────────────────────────────
         h_orig, w_orig = frame.shape[:2]
@@ -241,10 +248,13 @@ def run_pipeline(cfg: dict):
 
         # ── NST ───────────────────────────────────────────────────────────────
         content_t = frame_to_tensor(frame_r, device)
+        # use more iterations for frame 0 (no temporal init yet)
+        frame_cfg = dict(nst_cfg)
+        frame_cfg["iterations"] = iter_first if frame_idx == 0 else iter_default
         stylised  = run_nst(
             content_tensor = content_t,
             style_tensor   = style_t,
-            cfg            = nst_cfg,
+            cfg            = frame_cfg,
             init_tensor    = prev_stylised,
             verbose        = False,
         )
