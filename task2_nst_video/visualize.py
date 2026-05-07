@@ -122,7 +122,7 @@ def make_beta_alpha_ablation(content_path, style_path, style_weights,
         print(f"  beta/alpha sw={sw}")
         res = run_nst(ct, st, cfg, verbose=False)
         axes[i + 2].imshow(_to_rgb(res))
-        axes[i + 2].set_title(f"sw={sw:.0e}")
+        axes[i + 2].set_title(f"sw={float(sw):.0e}")
         axes[i + 2].axis("off")
 
     plt.tight_layout()

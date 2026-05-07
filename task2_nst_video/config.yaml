@@ -26,7 +26,7 @@ task2:
   branded_poster_source: ""
 
   # Style-weight sweep values for the β/α ablation (3 required)
-  style_weight_sweep: [1.0e3, 1.0e5, 1.0e7]
+  style_weight_sweep: [1000.0, 100000.0, 10000000.0]
 
   # The single style image used during video_pipeline.py
   # (choose your best-looking style for the final video)
