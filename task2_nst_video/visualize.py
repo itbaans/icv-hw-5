@@ -324,12 +324,6 @@ def main():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"[visualize] device: {device}")
 
-    # ── load matting model ────────────────────────────────────────────────────
-    ckpt  = torch.load(mat_cfg["checkpoint"], map_location=device)
-    model = UNetMatting(n_channels=3, n_classes=1).to(device).eval()
-    model.load_state_dict(ckpt["state_dict"])
-    img_size = tuple(mat_cfg["data"]["img_size"])
-
     # ── paths from config ─────────────────────────────────────────────────────
     content_dir  = t2["content_dir"]   # e.g. "content/"  (5 frames)
     style_dir    = t2["style_dir"]     # e.g. "style/"    (3 paintings)
@@ -368,12 +362,24 @@ def main():
         os.path.join(out_dir, "layer_ablation.png")
     )
 
-    # ── 4. Matting overlay ───────────────────────────────────────────────────
+    # ── 4. Matting overlay ──────────────────────────────────────────
     print("\n[4/6] Matting overlay …")
-    make_matting_overlay(
-        content_paths[:5], model, img_size, device,
-        os.path.join(out_dir, "matting_overlay.png")
-    )
+    ckpt_path = mat_cfg.get("checkpoint", "")
+    if ckpt_path and os.path.exists(ckpt_path):
+        try:
+            ckpt  = torch.load(ckpt_path, map_location=device)
+            model = UNetMatting(n_channels=3, n_classes=1).to(device).eval()
+            model.load_state_dict(ckpt["state_dict"])
+            img_size = tuple(mat_cfg["data"]["img_size"])
+            make_matting_overlay(
+                content_paths[:5], model, img_size, device,
+                os.path.join(out_dir, "matting_overlay.png")
+            )
+        except Exception as e:
+            print(f"  ⚠ Skipping matting overlay: {e}")
+    else:
+        print(f"  ⚠ Skipping matting overlay — checkpoint not found: {ckpt_path}")
+        print("    Run matting/train.py first, then re-run visualize.py.")
 
     # ── 5. Feature maps ──────────────────────────────────────────────────────
     print("\n[5/6] Feature maps …")
