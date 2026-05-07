@@ -191,11 +191,14 @@ def run_nst(
     else:
         opt_img = content_tensor.clone().detach().requires_grad_(True)
 
-    content_w = cfg.get("content_weight", 1e5)
-    style_w   = cfg.get("style_weight",   3e4)
-    tv_w      = cfg.get("tv_weight",      1e0)
-    optimizer_name = cfg.get("optimizer", "lbfgs").lower()
-    max_iter       = cfg.get("iterations", 500)
+    # Explicit float() cast: YAML parses `tv_weight: 1` as Python int, not float.
+    # In PyTorch 2.x, `int * tensor` can fall through to tensor.__index__() and
+    # raise "only integer tensors of a single element can be converted to an index".
+    content_w = float(cfg.get("content_weight", 1e5))
+    style_w   = float(cfg.get("style_weight",   3e4))
+    tv_w      = float(cfg.get("tv_weight",      1e0))
+    optimizer_name = cfg.get("optimizer", "adam").lower()
+    max_iter       = int(cfg.get("iterations", 200))
 
     # ---- loss closure ----
     def compute_loss():
@@ -205,18 +208,19 @@ def run_nst(
         cur_content = feats[VGG19Features.CONTENT_IDX].squeeze(0)
         c_loss = F.mse_loss(cur_content, target_content)
 
-        # style loss
-        s_loss = torch.tensor(0.0, device=device)
-        for idx_out, i in enumerate(VGG19Features.STYLE_IDXS):
-            cur_gram  = gram_matrix(feats[i])
-            tgt_gram  = target_style[idx_out]
-            s_loss = s_loss + F.mse_loss(cur_gram, tgt_gram)
-        s_loss = s_loss / len(VGG19Features.STYLE_IDXS)
+        # style loss — accumulate in a list then sum to avoid seeding with
+        # a torch.tensor(0.0) which can break gradient tracking in some paths
+        style_terms = [
+            F.mse_loss(gram_matrix(feats[i]), target_style[k])
+            for k, i in enumerate(VGG19Features.STYLE_IDXS)
+        ]
+        s_loss = sum(style_terms) / float(len(style_terms))
 
         tv_loss = total_variation(opt_img)
 
         total = content_w * c_loss + style_w * s_loss + tv_w * tv_loss
         return total, c_loss, s_loss, tv_loss
+
 
     # ---- optimise ----
     if optimizer_name == "adam":
