@@ -222,11 +222,14 @@ def run_nst(
     if optimizer_name == "adam":
         lr  = cfg.get("adam_lr", 1e1)
         opt = Adam([opt_img], lr=lr)
+        # Adam loop — wrap each step in enable_grad so the graph is built
+        # even if called from a no_grad context (e.g. video pipeline loop).
         for it in range(max_iter):
-            opt.zero_grad()
-            total, c, s, tv = compute_loss()
-            total.backward()
-            opt.step()
+            with torch.enable_grad():
+                opt.zero_grad()
+                total, c, s, tv = compute_loss()
+                total.backward()
+                opt.step()
             if verbose and it % 50 == 0:
                 print(f"  Adam iter {it:04d} | total={total.item():.2f} "
                       f"content={content_w*c.item():.2f} "
@@ -234,13 +237,18 @@ def run_nst(
                       f"tv={tv_w*tv.item():.2f}")
 
     elif optimizer_name == "lbfgs":
+        # NOTE: In PyTorch 2.x, optimizer.step() is decorated with @no_grad.
+        # L-BFGS calls the closure from inside that no_grad context, so without
+        # torch.enable_grad() the computation graph is never built and
+        # total.backward() silently fails (surfaces as a cryptic index TypeError).
         opt = LBFGS([opt_img], max_iter=max_iter, line_search_fn="strong_wolfe")
         _cnt = [0]
 
         def closure():
-            opt.zero_grad()
-            total, c, s, tv = compute_loss()
-            total.backward()
+            with torch.enable_grad():
+                opt.zero_grad()
+                total, c, s, tv = compute_loss()
+                total.backward()
             if verbose and _cnt[0] % 50 == 0:
                 print(f"  L-BFGS iter {_cnt[0]:04d} | total={total.item():.2f} "
                       f"content={content_w*c.item():.2f} "

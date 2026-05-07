@@ -85,8 +85,8 @@ task2:
     height:         360            # resize content/style images to this height
                                    # (aspect ratio preserved for content)
 
-    optimizer:      "lbfgs"        # "lbfgs" (best quality) or "adam" (faster)
-    iterations:     500            # L-BFGS steps (or Adam steps if adam)
+    optimizer:      "adam"         # "adam" (recommended for video) or "lbfgs" (better quality, very slow per-frame)
+    iterations:     200            # Adam steps per frame (500 for lbfgs single-image stylization)
     adam_lr:        10.0           # only used when optimizer = "adam"
 
     # Loss weights
