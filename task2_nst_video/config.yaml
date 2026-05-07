@@ -19,7 +19,7 @@ task2:
   output_dir:  "outputs/"
 
   # Path to one seed image from Task 1 (used for VGG19 feature-map figure)
-  seed_img_for_feature_maps: "../task1_cnn/cnn_outputs/sample_seed.jpg"
+  seed_img_for_feature_maps: "/kaggle/input/datasets/abdullahahmedani/seeds-data/filtered/106.png"
 
   # Source image for the 1024×1024 branded poster.
   # Set this to one of your best stylised frames after running the pipeline.
@@ -37,7 +37,7 @@ task2:
   # --------------------------------------------------------------------------
   matting:
 
-    checkpoint: "outputs/matting_best.pth"   # written by matting/train.py
+    checkpoint: "/kaggle/input/models/abdullahahmedani/matting-model/pytorch/default/1/matting_best.pth"   # written by matting/train.py
 
     # Model config
     bilinear: false   # use ConvTranspose2d upsampling (false) vs bilinear (true)
