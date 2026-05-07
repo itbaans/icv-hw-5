@@ -186,10 +186,13 @@ def run_nst(
     target_style   = [gram_matrix(style_feats[i]).detach() for i in VGG19Features.STYLE_IDXS]
 
     # ---- initialise the optimising image ----
+    # .contiguous() is required for L-BFGS: it calls p.grad.view(-1) internally,
+    # which fails if the tensor (or its gradient) is non-contiguous (e.g. when
+    # init_tensor came from AMP, a permute, or a previous detach chain).
     if init_tensor is not None:
-        opt_img = init_tensor.clone().detach().requires_grad_(True)
+        opt_img = init_tensor.clone().detach().contiguous().requires_grad_(True)
     else:
-        opt_img = content_tensor.clone().detach().requires_grad_(True)
+        opt_img = content_tensor.clone().detach().contiguous().requires_grad_(True)
 
     # Explicit float() cast: YAML parses `tv_weight: 1` as Python int, not float.
     # In PyTorch 2.x, `int * tensor` can fall through to tensor.__index__() and
