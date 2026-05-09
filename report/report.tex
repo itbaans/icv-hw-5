@@ -671,17 +671,21 @@ spatial counting signal the Task~1 CNN must learn to integrate.
 
 \begin{table}[h]
 \centering
-\caption{Unified comparison across all seed-counting methods. Latency is measured on a
-single NVIDIA T4 GPU. Training cost is an estimate based on observed Kaggle session times.
-Failure cases are from the failure\_cases.json produced by the Assignment 2 evaluator.}
+\caption{Unified comparison across seed-counting methods. Assignment 2/3 MAE and RMSE
+are computed on the full 141-image dataset by the original evaluators. CNN metrics
+($\dagger$) are computed on 20 selected failure cases (GT range 50--135) where
+edge detection breaks down; overall validation MAE is reported separately in
+Table~\ref{tab:configs}. Latency on a single NVIDIA T4 GPU.
+Failures fixed: number of images where $|\hat{y}-y| < |$A2$_{\text{pred}}-y|$.}
 \begin{tabular}{lcccccc}
 \toprule
-Method & MAE & RMSE & Latency (ms/img) & Model size & Train cost & Failures fixed \\
+Method & MAE & RMSE & Acc.\,$\pm10\%$ & Model size & Train cost & Failures fixed \\
 \midrule
-Clustering (A1)     & $\sim$18 & $\sim$24 & 12  & 0\,MB      & None         & --- \\
-Edge Detection (A2) & $\sim$14 & $\sim$19 & 35  & 0\,MB      & None         & 4/N \\
-CNN Model A         & [INSERT] & [INSERT] & 4   & 0.4\,MB    & $\sim$4\,GPU-hr & [X/N] \\
-CNN Model B         & [INSERT] & [INSERT] & 11  & 18.5\,MB   & $\sim$6\,GPU-hr & [X/N] \\
+Clustering (A2)      & 39.04 & 59.82 & 26.2\% & 0\,MB   & None           & --- \\
+Sobel Edge Det.\ (A3) & 8.99  & 14.37 & 51.1\% & 0\,MB   & None           & 69/141 \\
+Canny Edge Det.\ (A3) & 7.67  & 12.77 & 70.2\% & 0\,MB   & None           & 42/141 \\
+CNN Model A          & 2.19$^\dagger$ & 3.49$^\dagger$ & --- & 1.2\,MB & $\sim$4\,GPU-hr & 20/20 \\
+CNN Model B          & 2.40$^\dagger$ & 3.38$^\dagger$ & --- & 18.5\,MB & $\sim$6\,GPU-hr & 20/20 \\
 \bottomrule
 \end{tabular}
 \label{tab:comparison}
