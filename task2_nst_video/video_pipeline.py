@@ -201,6 +201,7 @@ def run_pipeline(cfg: dict):
     img_size = tuple(mat_cfg["data"]["img_size"])  # (H, W)
 
     # ── load style images (one per segment) ──────────────────────────────────
+    height      = int(nst_cfg.get("height", 512))
     style_paths = task2_cfg.get("style_images", None)
     if not style_paths:
         # fall back to single style_image repeated 3 times
