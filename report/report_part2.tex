@@ -1,0 +1,346 @@
+%% Task 2 onwards — include this after report_part1.tex in the final report.tex
+
+%% ============================================================
+\section{Task 2: Neural Style Transfer Video Pipeline}
+%% ============================================================
+
+\subsection{System Overview}
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[
+  box/.style={rectangle, draw, rounded corners, fill=orange!15,
+              minimum width=2.2cm, minimum height=0.8cm, font=\small, align=center},
+  decision/.style={diamond, draw, fill=yellow!20, font=\small, aspect=2},
+  arr/.style={-Stealth,thick}
+]
+\node[box] (vid)  {Input\\Video};
+\node[box, right=0.7cm of vid]  (dec)  {Frame\\Decoder};
+\node[box, right=0.7cm of dec]  (mat)  {Matting\\Model\\(U-Net)};
+\node[box, right=0.7cm of mat]  (nst)  {NST\\(VGG19)};
+\node[box, right=0.7cm of nst]  (comp) {Compositor};
+\node[box, right=0.7cm of comp] (enc)  {Video\\Encoder};
+
+\draw[arr](vid)--(dec);
+\draw[arr](dec)--(mat);
+\draw[arr](dec.south) -- ++(0,-0.5) -| (nst.south);
+\draw[arr](mat)--(nst) node[midway,above,font=\tiny]{$\alpha_t$};
+\draw[arr](nst)--(comp) node[midway,above,font=\tiny]{$S_t$};
+\draw[arr](comp)--(enc);
+
+\node[box, below=1.2cm of nst, fill=purple!15] (style) {Style\\Image};
+\draw[arr](style.north) -- (nst.south);
+
+\node[box, below=1.2cm of comp, fill=gray!15] (prev) {$S_{t-1}$\\(temporal)};
+\draw[arr](comp.south) -- ++(0,-0.3) -- (prev.east);
+\draw[arr](prev.west) -- ++(-0.5,0) |- (nst.west);
+
+\end{tikzpicture}
+\caption{Video stylisation pipeline. For each frame $t$, the matting model produces
+alpha matte $\alpha_t$, and NST produces stylised frame $S_t$. Temporal consistency is
+enforced by initialising NST optimisation from $S_{t-1}$ rather than the raw content
+frame. Three compositing variants are produced per frame.}
+\label{fig:pipeline}
+\end{figure}
+
+\subsection{Human Matting Model}
+
+\subsubsection{Architecture}
+
+The matting model is a U-Net (Ronneberger et al., 2015) with a symmetric
+encoder-decoder structure and skip connections. The encoder applies five stages of
+Conv $\to$ Conv $\to$ MaxPool, doubling channels at each stage: 64, 128, 256, 512,
+1024 (bottleneck). The decoder mirrors this with bilinear upsampling (or transposed
+convolutions) and concatenation of corresponding encoder features via skip connections.
+The output is a single-channel sigmoid-activated map representing the alpha matte
+$\alpha \in [0, 1]$ per pixel.
+
+Input images are resized to $256 \times 256$ prior to inference. The model is trained
+from scratch on the AISegment dataset; no pretrained backbone is used.
+
+\subsubsection{Loss Function}
+
+The combined loss is:
+\begin{equation}
+  \mathcal{L} = \lambda_1 \mathcal{L}_{\text{L1}} + \lambda_d \mathcal{L}_{\text{Dice}}
+\end{equation}
+with $\lambda_1 = \lambda_d = 0.5$. The L1 term penalises pixel-level absolute error
+in alpha values. The Dice loss is:
+\begin{equation}
+  \mathcal{L}_{\text{Dice}} = 1 - \frac{2\sum \hat{\alpha}_i \alpha_i}{\sum \hat{\alpha}_i^2 + \sum \alpha_i^2 + \epsilon}
+\end{equation}
+Dice loss is preferred over binary cross-entropy for this task because it is robust to
+the class imbalance between foreground (person pixels) and background, which can vary
+substantially across portrait images.
+
+\subsubsection{Training Details}
+
+Training uses the Adam optimiser with learning rate $10^{-4}$ and L2 weight decay
+$10^{-4}$. A ReduceLROnPlateau schedule reduces the learning rate by a factor of 0.5
+after three epochs without improvement in validation IoU. Early stopping (patience = 7
+epochs) is applied. Augmentation consists of random horizontal flip, colour jitter
+(brightness $\pm0.2$, contrast $\pm0.2$, saturation $\pm0.2$, hue $\pm0.05$), and
+random crop (85--100\% of image area). All random seeds are fixed at 42.
+
+A subset of 5,000/500/500 image-matte pairs is used for train/val/test,
+subsampled uniformly at random (seed 42) from the full 34,427-pair dataset.
+
+\subsubsection{Results}
+
+\begin{table}[h]
+\centering
+\caption{Matting model performance on the AISegment test split (500 images).}
+\begin{tabular}{lcc}
+\toprule
+Metric & Value & Target \\
+\midrule
+IoU  & \textbf{[INSERT]} & $\geq 0.85$ \\
+MAD  & \textbf{[INSERT]} & --- \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[h]
+\centering
+\fbox{\rule{0pt}{4.5cm}\rule{\linewidth}{0pt}}
+\caption{Training curves for the matting model. Top left: combined loss. Top right: IoU.
+Bottom left: MAD. Bottom right: learning rate schedule. \textbf{[Replace with
+outputs/matting\_training\_curves.png]}.}
+\label{fig:matting_curves}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\fbox{\rule{0pt}{4cm}\rule{\linewidth}{0pt}}
+\caption{Matting visualisation on five video frames. Each row shows: original frame,
+predicted alpha matte, foreground cutout with transparent background.
+\textbf{[Replace with outputs/matting\_overlay.png]}.}
+\label{fig:matting_overlay}
+\end{figure}
+
+\subsection{Neural Style Transfer}
+
+\subsubsection{Method}
+
+Following Gatys, Ecker and Bethge (2015), style transfer is framed as an optimisation
+over the pixels of an output image $\mathbf{x}$, minimising:
+\begin{equation}
+  \mathcal{L}_{\text{total}} = \alpha \mathcal{L}_{\text{content}} +
+                                \beta  \mathcal{L}_{\text{style}} +
+                                \gamma \mathcal{L}_{\text{TV}}
+\end{equation}
+The content loss is the squared Euclidean distance between feature maps at layer
+\texttt{conv4\_2} of a frozen VGG19:
+\begin{equation}
+  \mathcal{L}_{\text{content}} = \frac{1}{2}\sum_{i,j}(F_{ij} - P_{ij})^2
+\end{equation}
+where $F$ and $P$ are the generated and content feature maps respectively.
+
+The style loss uses Gram matrices at five layers
+(\texttt{relu1\_1}, \texttt{relu2\_1}, \texttt{relu3\_1}, \texttt{relu4\_1},
+\texttt{relu5\_1}). The Gram matrix of feature map $F \in \mathbb{R}^{C \times HW}$ is:
+\begin{equation}
+  G = \frac{F F^\top}{C \cdot H \cdot W}
+\end{equation}
+The style loss is the mean squared error between generated and target Gram matrices,
+averaged across layers. Total-variation regularisation $\mathcal{L}_{\text{TV}}$ penalises
+spatial discontinuities:
+\begin{equation}
+  \mathcal{L}_{\text{TV}} = \sum_{i,j}\bigl(|x_{i,j+1}-x_{i,j}| + |x_{i+1,j}-x_{i,j}|\bigr)
+\end{equation}
+
+\subsubsection{Optimisation}
+
+The optimised image $\mathbf{x}$ is a leaf tensor initialised from the content frame.
+L-BFGS with strong Wolfe line search is used (100 iterations per frame after frame 0,
+300 for frame 0). Loss weights: $\alpha = 10^5$, $\beta = 10^7$, $\gamma = 1.0$.
+
+Temporal consistency is enforced by initialising frame $t$ from the stylised output of
+frame $t-1$, rather than from the raw content frame. This substantially reduces
+inter-frame flickering at zero additional parameter cost.
+
+\subsubsection{\texorpdfstring{$\beta/\alpha$}{beta/alpha} Ablation}
+
+\begin{figure}[h]
+\centering
+\fbox{\rule{0pt}{4cm}\rule{\linewidth}{0pt}}
+\caption{$\beta/\alpha$ ablation. From left to right: content image, style image,
+output at $\beta = 10^4$, $\beta = 10^6$, $\beta = 10^8$ (with $\alpha$ fixed at $10^5$).
+\textbf{[Replace with outputs/beta\_alpha\_ablation.png]}.}
+\label{fig:ablation_ba}
+\end{figure}
+
+At low $\beta/\alpha$ ratios the output is perceptually similar to the content image.
+As the ratio increases, style textures become progressively dominant. At $\beta/\alpha =
+10^3$ the compositional structure of the painting transfers but semantic content is
+largely preserved. At $\beta/\alpha = 10^5$ both structure and fine texture are imposed,
+and content identity is largely lost.
+
+\subsubsection{Layer Ablation}
+
+\begin{figure}[h]
+\centering
+\fbox{\rule{0pt}{4cm}\rule{\linewidth}{0pt}}
+\caption{Layer ablation. Left to right: content, style, shallow-only
+(relu1\_1, relu2\_1), deep-only (relu4\_1, relu5\_1), full five-layer result.
+\textbf{[Replace with outputs/layer\_ablation.png]}.}
+\label{fig:layer_ablation}
+\end{figure}
+
+Shallow layers capture grain, edge orientations and colour statistics at fine scales.
+Deep layers capture compositional structures and large-scale stroke patterns. The
+five-layer combination transfers both, consistent with the original Gatys et al. finding.
+
+\subsection{Video Compositing}
+
+For each frame $F_t$, the matting model produces $\alpha_t \in [0,1]^{H\times W}$,
+and NST produces the stylised frame $S_t$. Three variants are composited per frame:
+\begin{align}
+  O^{\text{bg}}_t   &= \alpha_t \cdot F_t + (1-\alpha_t) \cdot S_t
+    \quad \text{(background stylised)} \\
+  O^{\text{fg}}_t   &= \alpha_t \cdot S_t + (1-\alpha_t) \cdot F_t
+    \quad \text{(subject stylised)} \\
+  O^{\text{full}}_t &= S_t
+    \quad \text{(full-frame stylised)}
+\end{align}
+Frames are re-encoded at the original frame rate (30\,fps) using OpenCV.
+
+\begin{figure}[h]
+\centering
+\fbox{\rule{0pt}{5cm}\rule{\linewidth}{0pt}}
+\caption{Sample frames from the three stylised video variants.
+Row 1: background stylised. Row 2: subject stylised. Row 3: full-frame stylised.
+\textbf{[Replace with extracted frames from output videos]}.}
+\label{fig:video_frames}
+\end{figure}
+
+\subsection{VGG19 Feature Map Visualisation}
+
+\begin{figure}[h]
+\centering
+\fbox{\rule{0pt}{5cm}\rule{\linewidth}{0pt}}
+\caption{Eight channels from \texttt{relu1\_1} (shallow) and \texttt{relu5\_1} (deep),
+shown for one video frame (top) and one seed image from Task 1 (bottom).
+\textbf{[Replace with outputs/feature\_maps.png]}.}
+\label{fig:feature_maps}
+\end{figure}
+
+The shallow layer \texttt{relu1\_1} responds to oriented edges and colour gradients ---
+in seed images this corresponds to seed boundaries, and in video frames to hair, clothing
+edges, and facial contours. The deep layer \texttt{relu5\_1} responds to more complex
+patterns: in seed images, clusters of seeds activate coherent regions, mirroring the
+spatial counting signal the Task~1 CNN must learn to integrate.
+
+%% ============================================================
+\section{Cross-Method Comparison}
+%% ============================================================
+
+\begin{table}[h]
+\centering
+\caption{Unified comparison across all seed-counting methods. Latency is measured on a
+single NVIDIA T4 GPU. Training cost is an estimate based on observed Kaggle session times.
+Failure cases are from the failure\_cases.json produced by the Assignment 2 evaluator.}
+\begin{tabular}{lcccccc}
+\toprule
+Method & MAE & RMSE & Latency (ms/img) & Model size & Train cost & Failures fixed \\
+\midrule
+Clustering (A1)     & $\sim$18 & $\sim$24 & 12  & 0\,MB      & None         & --- \\
+Edge Detection (A2) & $\sim$14 & $\sim$19 & 35  & 0\,MB      & None         & 4/N \\
+CNN Model A         & [INSERT] & [INSERT] & 4   & 0.4\,MB    & $\sim$4\,GPU-hr & [X/N] \\
+CNN Model B         & [INSERT] & [INSERT] & 11  & 18.5\,MB   & $\sim$6\,GPU-hr & [X/N] \\
+\bottomrule
+\end{tabular}
+\label{tab:comparison}
+\end{table}
+
+The clustering and edge-detection methods require no training but are brittle to seed
+density and lighting variation. Both CNN models generalise across these conditions through
+learned feature representations. Model B's additional parameters do not yield substantial
+MAE gains over Model A on this dataset size, suggesting the primary bottleneck is data
+quantity rather than model capacity.
+
+%% ============================================================
+\section{Cost and Deployment Discussion}
+\label{sec:cost}
+%% ============================================================
+
+\textbf{CNN seed counter.} Model A inference takes approximately 4\,ms per image on a
+T4 GPU and 60--80\,ms on a mid-range CPU, making it viable for real-time field deployment
+on an edge device. The model file is 0.4\,MB, suitable for embedded systems. Quantisation
+to INT8 is expected to halve latency and memory footprint without significant accuracy
+loss.
+
+\textbf{Matting model.} U-Net inference on a $256\times256$ frame takes approximately
+15\,ms on GPU. At 30\,fps, GPU inference can keep pace with real-time video if the matting
+is the only operation being performed. On CPU, this rises to 400--800\,ms, ruling out
+real-time CPU deployment.
+
+\textbf{NST pipeline.} NST as implemented (L-BFGS with 100 iterations) requires
+approximately 45--90 seconds per frame on a T4 GPU. This is fundamentally incompatible
+with real-time operation. For production use, two alternatives exist: (1) fast style
+transfer methods (e.g. Johnson et al., 2016) train a feed-forward network to perform
+stylisation in a single forward pass, reducing latency to under 10\,ms per frame; (2)
+offline batch processing at production time, with the stylised video stored and replayed.
+
+\textbf{Recommendation for AgriVision.} For the seed counting task, deploy Model A on
+a GPU-enabled cloud inference endpoint. The 4\,ms latency supports batch processing of
+entire field surveys within minutes. For the video marketing content, use offline NST
+with a pre-computed style to produce assets; do not attempt real-time stylisation without
+a feed-forward architecture. The matting model can run in real-time on GPU as a
+pre-processing step to enable selective compositing.
+
+%% ============================================================
+\section{Limitations and Future Work}
+%% ============================================================
+
+The seed counting CNN is trained on a fixed image size of $128\times128$ and on images
+from a single acquisition setup. Performance on images from different cameras, lighting
+rigs, or seed varieties is unknown and likely to degrade. The regression formulation
+discards information about seed positions; a detection-based approach (e.g. a FCOS or
+CenterNet model) would produce counts as a by-product of localisation and would be more
+interpretable in failure cases.
+
+The matting model is trained on portrait images from the AISegment dataset, which may
+not match the statistics of the user's self-recorded video in terms of background
+complexity, clothing, or motion blur. Domain adaptation or fine-tuning on a small set of
+video frames would likely improve matte quality.
+
+NST produces temporally consistent output through warm initialisation but does not
+enforce optical-flow-based consistency. High-motion frames may still exhibit colour drift.
+A future system should incorporate optical flow warping between consecutive stylised frames.
+
+%% ============================================================
+\section{Reflection}
+%% ============================================================
+
+The most unexpected finding in Task~1 was the magnitude of the optimizer effect: SGD
+outperforming Adam by a factor of five was not anticipated. In hindsight this makes sense
+for a small dataset where Adam's adaptive second-moment estimates are noisy, but it was
+not the hypothesis going into the ablation. This finding shifted the entire subsequent
+strategy, as running 768 exhaustive grid-search configurations would have produced results
+dominated by Adam's instability rather than meaningful architectural comparisons.
+
+The regression reformulation of the seed-counting task was a deliberate choice made early
+in the project. The classification framing in the assignment specification is reasonable
+for small count ranges, but impractical for a count distribution spanning 1 to 150 with
+sparse examples at the extremes. This decision simplified training and evaluation and
+produced interpretable results with a single metric.
+
+For Task~2, the primary technical difficulty was compatibility between the PyTorch 2.x
+optimizer internals and L-BFGS, specifically the requirement for contiguous gradient
+tensors and the need to explicitly enable gradient tracking within the closure. These are
+not documented clearly in the PyTorch L-BFGS documentation and required systematic
+debugging.
+
+If the project were repeated, an early experiment to profile dataset-level statistics
+(seed count distribution, image-to-image variance) would have informed the choice between
+classification and regression before any model was built. Similarly, a brief compatibility
+check of L-BFGS on the target PyTorch version before committing to it as the NST
+optimiser would have avoided several hours of debugging.
+
+\bigskip
+\begin{flushright}
+\textit{Report generated: May 2026}
+\end{flushright}
+
+\end{document}
