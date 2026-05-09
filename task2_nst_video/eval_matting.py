@@ -31,7 +31,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "matting"))
 from model   import UNetMatting
 from dataset import AISegmentDataset
 from metrics import iou_score, mad_score
-from losses  import CombinedLoss
+from losses  import MattingLoss
 from torch.utils.data import DataLoader, Subset
 
 
@@ -72,7 +72,7 @@ def evaluate(model, loader, criterion, device):
         for imgs, mattes in loader:
             imgs, mattes = imgs.to(device), mattes.to(device)
             preds = model(imgs)
-            loss  = criterion(preds, mattes)
+            loss, _, _ = criterion(preds, mattes)   # MattingLoss returns (total, l1, dice)
             b     = imgs.size(0)
             total_loss += loss.item() * b
             total_iou  += iou_score(preds, mattes) * b
@@ -273,7 +273,7 @@ def main():
                              shuffle=False, num_workers=2, pin_memory=True)
 
     # ── evaluation ────────────────────────────────────────────────────────────
-    loss_fn = CombinedLoss(
+    loss_fn = MattingLoss(
         lambda_l1   = float(mat_cfg["loss"]["lambda_l1"]),
         lambda_dice = float(mat_cfg["loss"]["lambda_dice"]),
     )
