@@ -132,8 +132,8 @@ def main():
     print(f"Loaded: {args.checkpoint}  |  config: {params}")
 
     # ── attach GradCAM to last conv block's activation (before GAP) ─────────
-    # AblationModel stores blocks in self.blocks (a ModuleList)
-    target_layer = model.blocks[-1]   # last conv block
+    # AblationModel stores blocks in self.features (nn.Sequential)
+    target_layer = model.features[-1]   # last conv block
     gcam = GradCAM(model, target_layer)
 
     # ── get validation data ──────────────────────────────────────────────────

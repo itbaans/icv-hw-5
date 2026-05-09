@@ -263,8 +263,8 @@ def plot_gradcam(result: dict, val_loader, device: torch.device,
     model.load_state_dict(ckpt["state_dict"])
     model.eval()
 
-    # attach GradCAM to last conv block
-    target_layer = model.blocks[-1]
+    # attach GradCAM to last conv block (self.features is the nn.Sequential of conv blocks)
+    target_layer = model.features[-1]
     gcam = GradCAM(model, target_layer)
 
     # collect predictions on up to 300 val images
