@@ -358,9 +358,12 @@ def main():
                              out_dir, args.epochs, args.patience)
         results[key] = result
 
-    # ── plots ─────────────────────────────────────────────────────────────────
+    # ── training curves (all models first) ───────────────────────────────────
     for key, result in results.items():
         plot_curves(result, os.path.join(out_dir, f"model_{key}_curves.png"))
+
+    # ── GradCAM grids (after all curves are safe) ─────────────────────────────
+    for key, result in results.items():
         plot_gradcam(result, val_loader, device,
                      os.path.join(out_dir, f"model_{key}_gradcam.png"),
                      n_rows=6)
