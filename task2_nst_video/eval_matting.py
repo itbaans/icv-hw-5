@@ -32,7 +32,7 @@ from model   import UNetMatting
 from dataset import AISegmentDataset
 from metrics import iou_score, mad_score
 from losses  import MattingLoss
-from torch.utils.data import DataLoader, Subset
+from torch.utils.data import DataLoader
 
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -252,21 +252,18 @@ def main():
 
     # ── build test split (same seed as training = reproducible) ───────────────
     data_cfg = mat_cfg["data"]
-    torch.manual_seed(42)
-
-    full_dataset = AISegmentDataset(
-        clip_root   = data_cfg["clip_root"],
-        matte_root  = data_cfg["matte_root"],
-        img_size    = tuple(data_cfg["img_size"]),
-        max_pairs   = data_cfg["n_train"] + data_cfg["n_val"] + data_cfg["n_test"],
-        augment     = False,
-        seed        = 42,
+    # AISegmentDataset handles the train/val/test split internally (same seed=42
+    # as training → identical 500-image test set).
+    test_dataset = AISegmentDataset(
+        clip_root  = data_cfg["clip_root"],
+        matte_root = data_cfg["matte_root"],
+        split      = "test",
+        img_size   = tuple(data_cfg["img_size"]),
+        n_train    = data_cfg["n_train"],
+        n_val      = data_cfg["n_val"],
+        n_test     = data_cfg["n_test"],
+        seed       = 42,
     )
-
-    n_train = data_cfg["n_train"]
-    n_val   = data_cfg["n_val"]
-    n_test  = data_cfg["n_test"]
-    test_dataset = Subset(full_dataset, range(n_train + n_val, n_train + n_val + n_test))
     print(f"Test split: {len(test_dataset)} images")
 
     test_loader = DataLoader(test_dataset, batch_size=16,
