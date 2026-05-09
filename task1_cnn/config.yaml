@@ -1,11 +1,12 @@
 # Task 1 Configuration
 
 seed: 42
+output_dir: "cnn_outputs"
 
 data:
   # Paths can be updated to point to /kaggle/input/ if running on Kaggle
-  image_dir: "../Assignment2/output/preprocessed_images/filtered/"
-  labels_path: "../Assignment2/output/segmentation/labeled_components.pkl"
+  image_dir:   "/kaggle/input/datasets/abdullahahmedani/seeds-data/filtered"
+  labels_path: "/kaggle/input/datasets/abdullahahmedani/seeds-data/filtered"  # labels read from filename stem (e.g. 42.jpg -> 42)
   image_size: [128, 128]
   batch_size: 32
   validation_split: 0.2
