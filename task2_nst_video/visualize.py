@@ -191,7 +191,7 @@ def _run_nst_with_custom_style_idxs(content_t, style_t, cfg):
     cw = float(cfg.get("content_weight", 1e5))
     sw = float(cfg.get("style_weight",   3e4))
     tv = float(cfg.get("tv_weight",      1e0))
-    ni = int(cfg.get("iterations",       300))
+    ni = int(cfg.get("n_steps", cfg.get("iterations", 300)))
 
     opt = Adam([opt_img], lr=float(cfg.get("adam_lr", 1e1)))
     for _ in range(ni):

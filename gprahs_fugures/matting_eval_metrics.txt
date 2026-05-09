@@ -1,0 +1,4 @@
+Test set evaluation (500 images)
+Loss : 0.0181
+IoU  : 0.9710
+MAD  : 0.017955

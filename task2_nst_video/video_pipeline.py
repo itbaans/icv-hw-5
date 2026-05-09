@@ -200,11 +200,17 @@ def run_pipeline(cfg: dict):
     model.load_state_dict(ckpt["state_dict"])
     img_size = tuple(mat_cfg["data"]["img_size"])  # (H, W)
 
-    # ── load style image once ─────────────────────────────────────────────────
-    style_path = task2_cfg["style_image"]
-    height     = nst_cfg.get("height", 360)
-    style_t    = load_img_as_tensor(style_path, height, device)
-    print(f"Style image: {style_path}")
+    # ── load style images (one per segment) ──────────────────────────────────
+    style_paths = task2_cfg.get("style_images", None)
+    if not style_paths:
+        # fall back to single style_image repeated 3 times
+        style_paths = [task2_cfg["style_image"]] * 3
+    style_tensors = []
+    for sp in style_paths:
+        style_tensors.append(load_img_as_tensor(sp, height, device))
+        print(f"Style: {sp}")
+
+    n_styles = len(style_tensors)
 
     # ── open input video ──────────────────────────────────────────────────────
     video_path = task2_cfg["input_video"]
@@ -217,15 +223,20 @@ def run_pipeline(cfg: dict):
     print(f"Video: {video_path}  |  FPS={fps:.2f}  |  frames={n_frames}")
 
     # ── temp directories for each variant ─────────────────────────────────────
-    tmp_bg  = tempfile.mkdtemp(prefix="nst_bg_")
-    tmp_fg  = tempfile.mkdtemp(prefix="nst_fg_")
+    tmp_bg   = tempfile.mkdtemp(prefix="nst_bg_")
+    tmp_fg   = tempfile.mkdtemp(prefix="nst_fg_")
     tmp_full = tempfile.mkdtemp(prefix="nst_full_")
 
-    prev_stylised: torch.Tensor | None = None
-    frame_idx = 0
-    max_frames = int(nst_cfg.get("max_frames", 0))  # 0 = process all
+    max_frames   = int(nst_cfg.get("max_frames", 0))  # 0 = process all
     iter_default = int(nst_cfg.get("iterations",       200))
     iter_first   = int(nst_cfg.get("iterations_first", iter_default))
+
+    effective_frames = min(n_frames, max_frames) if max_frames > 0 else n_frames
+    seg_size = effective_frames // n_styles   # frames per style segment
+
+    prev_stylised: torch.Tensor | None = None
+    frame_idx    = 0
+    cur_seg      = -1   # tracks which style segment we are in
 
     while True:
         ret, frame = cap.read()
@@ -236,7 +247,19 @@ def run_pipeline(cfg: dict):
             print(f"  max_frames={max_frames} reached — stopping early.")
             break
 
-        print(f"  Frame {frame_idx + 1}/{min(n_frames, max_frames) if max_frames else n_frames}", end="\r")
+        # ── determine which style segment this frame belongs to ───────────────
+        seg_idx = min(frame_idx // seg_size, n_styles - 1)
+        style_t = style_tensors[seg_idx]
+
+        # reset temporal state at each segment boundary
+        if seg_idx != cur_seg:
+            prev_stylised = None
+            cur_seg = seg_idx
+            print(f"\n  Segment {seg_idx + 1}/{n_styles}: {style_paths[seg_idx]}")
+
+        print(f"  Frame {frame_idx + 1}/{effective_frames}  "
+              f"[seg {seg_idx+1}, style: {os.path.basename(style_paths[seg_idx])}]",
+              end="\r")
 
         # ── resize frame to NST height ────────────────────────────────────────
         h_orig, w_orig = frame.shape[:2]
@@ -248,9 +271,9 @@ def run_pipeline(cfg: dict):
 
         # ── NST ───────────────────────────────────────────────────────────────
         content_t = frame_to_tensor(frame_r, device)
-        # use more iterations for frame 0 (no temporal init yet)
+        # frame 0 of each new segment has no temporal init → use iter_first
         frame_cfg = dict(nst_cfg)
-        frame_cfg["iterations"] = iter_first if frame_idx == 0 else iter_default
+        frame_cfg["iterations"] = iter_first if prev_stylised is None else iter_default
         stylised  = run_nst(
             content_tensor = content_t,
             style_tensor   = style_t,
@@ -283,6 +306,8 @@ def run_pipeline(cfg: dict):
     encode_video(tmp_full, os.path.join(out_dir, "stylized_full.mp4"),       fps)
 
     print("Done.")
+
+
 
 
 # ---------------------------------------------------------------------------

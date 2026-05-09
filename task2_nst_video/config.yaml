@@ -24,13 +24,18 @@ task2:
   # Source image for the 1024×1024 branded poster.
   # Set this to one of your best stylised frames after running the pipeline.
   branded_poster_source: ""
-
   # Style-weight sweep values for the β/α ablation (3 required).
-  # These span low/medium/high relative to content_weight=100000.0
-  style_weight_sweep: [10000.0, 1000000.0, 100000000.0]
+  # Matches beta_alpha_sweep in the canonical schema.
+  style_weight_sweep: [1000.0, 100000.0, 10000000.0]
 
-  # The single style image used during video_pipeline.py
-  # (choose your best-looking style for the final video)
+  # Style images used by video_pipeline.py.
+  # The video is divided into equal segments; each style is applied to one segment.
+  # List exactly 3 (one per required video variant section).
+  style_images:
+    - "style/new_style.jpg"     # segment 1  ← replace with your 3 style files
+    - "style/regard-multiple-1989.jpg"     # segment 2
+    - "style/water-lilies.jpg"     # segment 3
+  # Legacy single-style key (used by visualize.py grid/ablation):
   style_image: "style/new_style.jpg"
 
   # --------------------------------------------------------------------------
@@ -44,20 +49,15 @@ task2:
     bilinear: false   # use ConvTranspose2d upsampling (false) vs bilinear (true)
 
     # Loss weights: L_total = lambda_l1 * L1 + lambda_dice * DiceLoss
-    # Rationale: equal weighting balances pixel-level accuracy (L1) with
-    # boundary-shape quality (Dice). Dice is preferred over BCE because it is
-    # robust to the strong foreground/background imbalance in portrait images.
     loss:
       lambda_l1:   0.5
       lambda_dice: 0.5
 
     # Dataset (AISegment)
-    # Subsampling strategy: random shuffle with fixed seed, then take first
-    # n_train / n_val / n_test pairs. This ensures reproducibility.
     data:
-      clip_root:  "/kaggle/input/datasets/laurentmih/aisegmentcom-matting-human-datasets/clip_img"    # path to AISegment clip_img/ folder
-      matte_root: "/kaggle/input/datasets/laurentmih/aisegmentcom-matting-human-datasets/matting"     # path to AISegment matting/  folder
-      img_size:   [256, 256]          # resize all images to (H, W)
+      clip_root:  "/kaggle/input/datasets/laurentmih/aisegmentcom-matting-human-datasets/clip_img"
+      matte_root: "/kaggle/input/datasets/laurentmih/aisegmentcom-matting-human-datasets/matting"
+      img_size:   [256, 256]
       n_train:    5000
       n_val:      500
       n_test:     500
@@ -65,49 +65,56 @@ task2:
     # Training
     training:
       seed:              42
-      epochs:            30           # minimum 20 required; allow up to 30
+      epochs:            30
       batch_size:        16
       num_workers:       4
       lr:                1.0e-4
       weight_decay:      1.0e-4
-      lr_patience:       3            # ReduceLROnPlateau patience
-      early_stop_patience: 7          # stop if val IoU doesn't improve for N epochs
-      amp:               true         # automatic mixed precision (set false if no CUDA)
+      lr_patience:       3
+      early_stop_patience: 7
+      amp:               true
 
   # --------------------------------------------------------------------------
   # Neural Style Transfer
   # --------------------------------------------------------------------------
   nst:
 
-    # VGG19 is used; frozen in eval mode.
-    # Content layer : conv4_2 (index 4 in VGG19Features)
-    # Style  layers : relu1_1, relu2_1, relu3_1, relu4_1, relu5_1
+    # Architecture (VGG19, frozen, eval mode)
+    backbone:      "VGG19"
+    content_layer: "relu4_2"         # conv4_2 — mid-level semantic content
+    style_layers:                    # five layers for multi-scale style
+      - "relu1_1"
+      - "relu2_1"
+      - "relu3_1"
+      - "relu4_1"
+      - "relu5_1"
 
-    height:         360            # resize content/style images to this height
+    # Subsets used for the layer ablation figure
+    shallow_style_layers: ["relu1_1", "relu2_1"]
+    deep_style_layers:    ["relu4_1", "relu5_1"]
+
+    height:         512            # resize content/style images to this height
                                    # (aspect ratio preserved for content)
 
-    # max_frames: cap how many frames are processed (useful when testing with
-    # lbfgs which is slow). Set to 0 or remove to process all frames.
-    max_frames:     0             # ~2 sec at 30fps; good for L-BFGS testing
+    # max_frames: cap frames processed (0 = all frames)
+    max_frames:     0
 
-    optimizer:      "lbfgs"        # "adam" (~1s/frame) or "lbfgs" (~60s/frame)
-    iterations:     100            # L-BFGS steps per frame (100 is enough with
-                                   # temporal init; first frame uses 300 below)
-    iterations_first: 300          # more steps for frame 0 (no temporal init)
-    adam_lr:        10.0           # only used when optimizer = "adam"
+    optimizer:        "lbfgs"      # "adam" (~1s/frame) or "lbfgs" (~60s/frame)
+    n_steps:          500          # steps for STATIC NST (visualize.py ablation figures,
+                                   # no temporal init — needs more iterations to converge)
+    iterations:       100          # steps per VIDEO frame 1+ (temporal init from t-1
+                                   # means the image is already close → fewer steps)
+    iterations_first: 500          # steps for video frame 0 (no prior frame = same as static)
+    adam_lr:          10.0         # only used when optimizer = "adam"
 
-    # Loss weights  (all plain floats — avoid YAML scientific notation which
-    # can parse as strings in some PyYAML versions and cause TypeErrors)
+    # Loss weights  (plain floats — avoid YAML sci notation → string parse bugs)
     # β/α ratio = style_weight / content_weight
-    #   ratio ~  0.1  → barely stylised (content dominates)
-    #   ratio ~ 10    → moderate, balanced
-    #   ratio ~ 100   → strong stylisation  ← good default for video
+    #   ratio ~ 10    → moderate (content visible)
+    #   ratio ~ 100   → strong stylisation  ← default
     #   ratio ~ 1000+ → abstract / melted
     content_weight: 100000.0       # α  (content fidelity)
-    style_weight:   10000000.0     # β  (style strength)  β/α = 100
-    tv_weight:      1.0            # total-variation smoothness regulariser
+    style_weight:   10000000.0     # β  (style strength)   β/α = 100
+    tv_weight:      1.0            # total-variation smoothness
 
-    # Temporal consistency: when processing video frames, the stylised frame
-    # t-1 is passed as `init_tensor` instead of the raw content frame.
-    # This dramatically reduces flicker at zero extra parameters.
+    # Temporal consistency: init frame t from stylised frame t-1
     temporal_consistency: true
